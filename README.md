@@ -1,6 +1,13 @@
 # src
 
-TBD
+*  Virtual Environment
+*  Cookiecutter template (make, file structure, saving/storing)
+*  dvc (google drive)
+*  Docker
+*  Config files (hydra)
+*  Profiling (tensorboard)
+*  Logging (integrate with hydra)
+*  Update readme accordingly
 
 ## Project structure
 
