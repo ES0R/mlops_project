@@ -1,13 +1,22 @@
 # src
 
-*  Virtual Environment
-*  Cookiecutter template (make, file structure, saving/storing)
-*  dvc (google drive)
-*  Docker
-*  Config files (hydra)
-*  Profiling (tensorboard)
-*  Logging (integrate with hydra)
-*  Update readme accordingly
+1. Pick a dataset you would like to work with:
+
+2. Pick a model you would like to work with:
+
+3. Pick any Pytorch-based third-party package you would like to work with:
+
+4. Project description:
+    * Goal:
+    * Framework:
+    * Data:
+    * Model:
+
+5. Project Repo:
+
+6. Upload projection description as part of README.md
+
+7. Grind grind
 
 ## Project structure
 
