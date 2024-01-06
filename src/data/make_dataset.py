@@ -14,7 +14,7 @@ train_images_tensors = []
 desired_size = (224, 224)  # Adjust this based on your requirements
 
 transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=3),  # Convert to 3 channels if needed
+    #transforms.Grayscale(num_output_channels=3),  # Convert to 3 channels if needed
     transforms.Resize(desired_size),
     transforms.ToTensor(),
 ])
@@ -27,6 +27,10 @@ for filename in os.listdir(rawfolder):
             # Load the image
             image_path = os.path.join(rawfolder, filename)
             image = Image.open(image_path)
+
+            # Convert to RGB if the image is grayscale
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
 
             # Apply the transformation
             image_tensor = transform(image)
