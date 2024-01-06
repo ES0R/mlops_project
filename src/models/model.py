@@ -5,7 +5,7 @@ import torch.nn.functional as F
 class MyAwesomeModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(784, 128)
+        self.fc1 = nn.Linear(3*224*224, 128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 32)
         self.fc4 = nn.Linear(32, 10)
@@ -26,28 +26,18 @@ class MyCNNModel(nn.Module):
     def __init__(self):
         super(MyCNNModel, self).__init__()
 
-        # Convolutional layers
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
+        self.relu1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        # Max pooling layer
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-
-        # Fully connected layers
-        self.fc1 = nn.Linear(64 * 7 * 7, 128)  # Adjust input size based on your actual input size
-        self.fc2 = nn.Linear(128, 10)
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(16 * 112 * 112, 256)
+        self.relu3 = nn.ReLU()
+        self.fc2 = nn.Linear(256, 5)  # Assuming 10 classes for classification
 
     def forward(self, x):
-        x = x.view(-1, 1, 28, 28)  # Use -1 to handle variable batch sizes
-        # Convolutional layers with ReLU activation and pooling
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-
-        # Flatten the output for the fully connected layers
-        x = x.view(-1, 64 * 7 * 7)  # Adjust the size based on your actual input size
-
-        # Fully connected layers
-        x = F.relu(self.fc1(x))
+        x = self.pool1(self.relu1(self.conv1(x)))
+        x = self.flatten(x)
+        x = self.relu3(self.fc1(x))
         x = self.fc2(x)
-
         return x
