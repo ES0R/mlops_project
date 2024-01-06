@@ -2,18 +2,20 @@ import torch
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 from models.model import MyAwesomeModel
-from models.model import MyCNNModel   # Assuming you save the CNN model in cnn_model.py
+from models.model import MyCNNModel, UNet   # Assuming you save the CNN model in cnn_model.py
 import matplotlib.pyplot as plt
 import argparse
 import hydra
 
 split_index = 1000
-model_now = "CNN"
+model_now = "UNet"
 epochs = 10
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # Load your data using the mnist function from data.py
-train_images_tensor = torch.load("../data/processed/train_images_tensor.pt")
-train_target_tensor = torch.load("../data/processed/train_target_tensor.pt")
+train_images_tensor = torch.load("data/processed/train_images_tensor.pt")
+train_target_tensor = torch.load("data/processed/train_target_tensor.pt")
 
 # Ensure that the data tensors have the same length
 assert len(train_images_tensor) == len(train_target_tensor), "Mismatch in data length"
@@ -32,11 +34,15 @@ train_target_tensor, val_target_tensor = (
 
 # Choose the model based on the command-line argument
 if model_now == 'FCNN':
-    model = MyAwesomeModel()
+    model = MyAwesomeModel().to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 elif model_now == 'CNN':
-    model = MyCNNModel()
+    model = MyCNNModel().to(device)
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+elif model_now == 'UNet':
+    model = UNet().to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 else:
@@ -64,6 +70,8 @@ for epoch in range(epochs):
 
     for batch_images, batch_targets in train_loader:
         # Forward pass
+        batch_images = batch_images.to(device)
+        batch_targets = batch_targets.to(device)
         outputs = model(batch_images)
 
         # Compute the loss
@@ -88,6 +96,9 @@ for epoch in range(epochs):
 
     with torch.no_grad():
         for batch_images_val, batch_targets_val in val_loader:
+            batch_images_val = batch_images_val.to(device)
+            batch_targets_val = batch_targets_val.to(device)
+
             outputs_val = model(batch_images_val)
             loss_val = criterion(outputs_val, batch_targets_val)
             val_loss += loss_val.item()
