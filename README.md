@@ -1,22 +1,6 @@
-# src
+# mlops_project
 
-1. Pick a dataset you would like to work with:
-
-2. Pick a model you would like to work with:
-
-3. Pick any Pytorch-based third-party package you would like to work with:
-
-4. Project description:
-    * Goal:
-    * Framework:
-    * Data:
-    * Model:
-
-5. Project Repo:
-
-6. Upload projection description as part of README.md
-
-7. Grind grind
+This is the project repo for the DTU course Machine Learning Operations (02476) for group 12.
 
 ## Project Description
 
