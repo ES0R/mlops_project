@@ -1,30 +1,44 @@
 import torch
-import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
+from PIL import Image
 import os
+import matplotlib.pyplot as plt
 
-#def mnist(rawfolder, save_path):
-# Initialize empty lists to store train and test tensors
-
-rawfolder = "../../data/raw"
+rawfolder = "../../data/raw/images"
 save_path = "../../data/processed"
 
-
+# Initialize empty lists to store train tensors
 train_images_tensors = []
-train_target_tensors = []
+
+# Define the desired size for resizing
+desired_size = (224, 224)  # Adjust this based on your requirements
+
+transform = transforms.Compose([
+    transforms.Grayscale(num_output_channels=3),  # Convert to 3 channels if needed
+    transforms.Resize(desired_size),
+    transforms.ToTensor(),
+])
+
 
 # Loop through train files
-for i in range(6):
-    train_images_file_path = rawfolder+'/train_images_'+str(i)+'.pt'
-    train_images_state_dict = torch.load(train_images_file_path)
-    train_images_tensors.append(train_images_state_dict)
+for filename in os.listdir(rawfolder):
+    if filename.endswith((".jpg", ".jpeg", ".png")):  # Assuming images are jpg, jpeg, or png
+        try:
+            # Load the image
+            image_path = os.path.join(rawfolder, filename)
+            image = Image.open(image_path)
 
-    train_target_file_path = rawfolder+'/train_target_'+str(i)+'.pt'
-    train_target_state_dict = torch.load(train_target_file_path)
-    train_target_tensors.append(train_target_state_dict)
+            # Apply the transformation
+            image_tensor = transform(image)
 
-# Concatenate tensors along the first dimension (assuming they have the same size)
-train_images_tensor = torch.cat(train_images_tensors, dim=0)
-train_target_tensor = torch.cat(train_target_tensors, dim=0)
+            # Add the tensor to the list
+            train_images_tensors.append(image_tensor)
+        except Exception as e:
+            print(f"Error processing {filename}: {e}")
+
+# Concatenate tensors along the first dimension
+train_images_tensor = torch.stack(train_images_tensors, dim=0)
+
 
 # Normalize the data with mean 0 and standard deviation 1
 mean_value = train_images_tensor.mean()
@@ -36,15 +50,6 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 torch.save(train_images_tensor, os.path.join(save_path, 'train_images_tensor.pt'))
-torch.save(train_target_tensor, os.path.join(save_path, 'train_target_tensor.pt'))
 
 
 
-
-"""
-if __name__ == '__main__':
-    # Get the data and process it
-    rawfolder = "../../data/raw"
-    save_path = "../../data/processed"
-    mnist(rawfolder, save_path)
-"""
