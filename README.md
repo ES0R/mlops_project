@@ -6,6 +6,25 @@ This is the project repo for the DTU course Machine Learning Operations (02476) 
 
 The goal of this project is to develop an ML system focusing on classifying memes using their images. The project will utilize Docker to ensure a consistent and isolated environment for development and deployment. We will use Nicki Skaftes Cookiecutter template for project structuring and organization for a good workflow. Specifying hyperparameters is also crucial for reproducibility so therefore we will also use configuration management with Hydra. Weights and Biases will also be integrated for comprehensive experiment tracking and logging. The dataset consists of 6992 images of memes with labels, which can be used for image classification. The models used for this project will be a CNN for a baseline and then a ViT as a more advanced model. The Transformers framework by Hugging Face will be used to integrate the ViT model.
 
+
+## Technologoies
+
+A list of frameworks the projects aims to include:
+
+|   Framework  | Function |
+| -------- | ------- |
+| Git   | Code Versioning    |
+| DVC    | Data Versioning   |
+| Conda    | Virtual Environment    |
+| Cookiecutter   | Project template   |
+| Docker   | Create shareable environment  |
+| Hydra   | Config for Hyperparameters & Model  |
+| Tensorboard | Profiling |
+| W&B   | Track and log values for experiments  |
+| Pytorch-lightning   | Reduce boilerplate Code |
+| Pytorch   | Deep learning framework |
+
+
 ## Project structure
 
 The directory structure of the project looks like this:
