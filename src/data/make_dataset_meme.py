@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
-rawfolder = "data/raw/images"
-labels_file = "data/raw/labels.csv"
-save_path = "data/processed"
+rawfolder = "../../data/raw/images"
+labels_file = "../../data/raw/labels.csv"
+save_path = "../../data/processed"
 
 # Load labels from CSV
 labels_df = pd.read_csv(labels_file)
@@ -32,11 +32,8 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-
-print("Start loading images")
-
 # Loop through train files
-for i,filename in enumerate(os.listdir(rawfolder)):
+for filename in os.listdir(rawfolder):
     if filename.endswith((".jpg", ".jpeg", ".png")):  # Assuming images are jpg, jpeg, or png
         try:
             # Load the image
@@ -56,14 +53,8 @@ for i,filename in enumerate(os.listdir(rawfolder)):
             # Get corresponding label and add it to the list
             corresponding_label = labels_df.loc[labels_df['image_name'] == filename][labels_column].values[0]
             corresponding_labels.append(label_encoder.transform([corresponding_label])[0])
-            if (i % 500) == 0:
-                print(i)
         except Exception as e:
             print(f"Error processing {filename}: {e}")
-        finally:
-            print(i)
-
-
 
 # Convert the list of labels to a tensor
 corresponding_labels_tensor = torch.tensor(corresponding_labels, dtype=torch.long)
@@ -87,6 +78,3 @@ torch.save(corresponding_labels_tensor, os.path.join(save_path, 'train_target_te
 
 # Save label encoder
 torch.save(label_encoder, os.path.join(save_path, 'label_encoder.pt'))
-
-print(f"Images loaded: {corresponding_labels_tensor.size()}")
-

@@ -8,7 +8,7 @@ import argparse
 import hydra
 
 split_index = 1000
-model_now = "UNet"
+model_now = "MyCNNModel"
 epochs = 10
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

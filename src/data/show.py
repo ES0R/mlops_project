@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 import os
 
 # Path to the saved tensors and label encoder
-save_path = "data/processed"
+save_path = "../../data/processed"
 tensor_filename ="train_images_tensor.pt" 
 labels_filename ="train_target_tensor.pt" 
 label_encoder_filename =  "label_encoder.pt"
+
 
 # Load the saved tensors and label encoder
 loaded_tensor = torch.load(os.path.join(save_path, tensor_filename))
 labels_tensor = torch.load(os.path.join(save_path, labels_filename))
 label_encoder = torch.load(os.path.join(save_path, label_encoder_filename))
+
 
 # Extract 5 example images and their corresponding labels from the tensors
 num_examples = 5
