@@ -53,7 +53,7 @@ def load_images(root_folder):
     return images_tensor
 
 # Load images tensor as before
-root_folder = "../../data/raw/images_dog"
+root_folder = "../../data/raw/images_dog_small"
 images_tensor = load_images(root_folder)
 
 # Print the size of the resulting tensor
@@ -93,7 +93,7 @@ def process_folder(folder_path):
     return res
 
 # Replace 'your_folder_path' with the path to your folder containing XML files without the ".xml" extension
-folder_path = "../../data/raw/Annotation"
+folder_path = "../../data/raw/Annotation_small"
 
 labels = process_folder(folder_path)
 

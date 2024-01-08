@@ -2,13 +2,13 @@ import torch
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 from models.model import MyAwesomeModel
-from models.model import MyCNNModel, UNet   # Assuming you save the CNN model in cnn_model.py
+from models.model import MyCNNModel, UNet, SimpleCNNModel   # Assuming you save the CNN model in cnn_model.py
 import matplotlib.pyplot as plt
 import argparse
 import hydra
 from tqdm import tqdm
 
-split_index = 1000
+split_index = 150
 model_now = "CNN"
 epochs = 10
 
@@ -24,15 +24,6 @@ assert len(train_images_tensor) == len(train_target_tensor), "Mismatch in data l
 print(train_images_tensor.size())
 print(train_target_tensor.size())
 
-train_images_tensor, val_images_tensor = (
-    train_images_tensor[split_index:],
-    train_images_tensor[:split_index],
-)
-train_target_tensor, val_target_tensor = (
-    train_target_tensor[split_index:],
-    train_target_tensor[:split_index],
-)
-
 # Choose the model based on the command-line argument
 if model_now == 'FCNN':
     model = MyAwesomeModel().to(device)
@@ -46,31 +37,49 @@ elif model_now == 'UNet':
     model = UNet().to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+elif model_now == 'Simple':
+    model = SimpleCNNModel().to(device)
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 else:
-    raise ValueError('Invalid model choice. Use --model FCNN or --model CNN')
+    raise ValueError('Invalid model choice.')
 
-
-# Assuming MyAwesomeModel or MyCNNModel has a forward method
-# and you have defined train_images_tensor, train_target_tensor, criterion, and optimizer as mentioned in your code
 
 # Hyperparameters
 batch_size = 64
 
+# Create a DataLoader for the entire dataset
+full_dataset = TensorDataset(train_images_tensor, train_target_tensor)
+full_loader = DataLoader(full_dataset, batch_size=len(full_dataset), shuffle=True)
+
+# Split the shuffled dataset into training and validation sets
+train_size = int(0.8 * len(full_dataset))
+val_size = len(full_dataset) - train_size
+train_dataset, val_dataset = torch.utils.data.random_split(full_dataset, [train_size, val_size])
+
 # Create a DataLoader for training data
-train_dataset = TensorDataset(train_images_tensor, train_target_tensor)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Create a DataLoader for validation data
-val_dataset = TensorDataset(val_images_tensor, val_target_tensor)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 
+
 print("Training begins")
+
+# Lists to store values for plotting
+train_losses = []
+val_losses = []
+train_accuracies = []
+val_accuracies = []
+
 
 # Training loop
 for epoch in range(epochs):
     model.train()
     total_loss = 0.0
+    correct_train = 0
+    total_train = 0
 
     # Use tqdm for the training loop
     for batch_images, batch_targets in tqdm(train_loader, desc=f'Training - Epoch [{epoch + 1}/{epochs}]'):
@@ -85,8 +94,13 @@ for epoch in range(epochs):
 
         total_loss += loss.item()
 
+        _, predicted_train = torch.max(outputs.data, 1)
+        total_train += batch_targets.size(0)
+        correct_train += (predicted_train == batch_targets).sum().item()
+
     average_loss = total_loss / len(train_loader)
-    print(f'Training - Epoch [{epoch + 1}/{epochs}], Loss: {average_loss:.4f}')
+    accuracy_train = correct_train / total_train
+    print(f'Training - Epoch [{epoch + 1}/{epochs}], Loss: {average_loss:.4f}, Accuracy: {accuracy_train:.4f}')
 
     # Validation
     model.eval()
@@ -110,6 +124,39 @@ for epoch in range(epochs):
     average_val_loss = val_loss / len(val_loader)
     accuracy_val = correct_val / total_val
     print(f'Validation - Epoch [{epoch + 1}/{epochs}], Loss: {average_val_loss:.4f}, Accuracy: {accuracy_val:.4f}')
+
+    # Save values for plotting
+    train_losses.append(average_loss)
+    val_losses.append(average_val_loss)
+    train_accuracies.append(accuracy_train)
+    val_accuracies.append(accuracy_val)
+
+# Plotting
+epochs_range = range(1, epochs + 1)
+
+plt.figure(figsize=(12, 4))
+
+# Plotting training and validation loss
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, train_losses, label='Training Loss')
+plt.plot(epochs_range, val_losses, label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.title('Training and Validation Loss')
+
+# Plotting training and validation accuracy
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, train_accuracies, label='Training Accuracy')
+plt.plot(epochs_range, val_accuracies, label='Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.title('Training and Validation Accuracy')
+
+plt.tight_layout()
+plt.show()
+
 
 # Optionally, save your trained model
 torch.save(model.state_dict(), 'models/trained_model.pth')

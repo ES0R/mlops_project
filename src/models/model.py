@@ -45,7 +45,7 @@ class MyCNNModel(nn.Module):
         self.relu4 = nn.ReLU()
         self.fc2 = nn.Linear(512, 256)
         self.relu5 = nn.ReLU()
-        self.fc3 = nn.Linear(256, 120)  # Output layer with 120 classes
+        self.fc3 = nn.Linear(256, 6)  # Output layer with 120 classes
 
     def forward(self, x):
         x = self.pool1(self.relu1(self.conv1(x)))
@@ -54,8 +54,35 @@ class MyCNNModel(nn.Module):
         x = self.flatten(x)
         x = self.relu4(self.fc1(x))
         x = self.relu5(self.fc2(x))
-        x = self.fc3(x)  # Remove softmax activation
+        x = self.fc3(x)
         return x
+
+class SimpleCNNModel(nn.Module):
+    def __init__(self):
+        super(SimpleCNNModel, self).__init__()
+
+        self.conv_blocks = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+
+        self.fc_layers = nn.Sequential(
+            nn.Linear(128 * 56 * 56, 512),
+            nn.ReLU(),
+            nn.Linear(512, 6)  # Output layer with 6 classes
+        )
+
+    def forward(self, x):
+        x = self.conv_blocks(x)
+        x = x.view(x.size(0), -1)  # Flatten the feature map
+        x = self.fc_layers(x)
+        return x
+
 
 import torch
 import torch.nn as nn
