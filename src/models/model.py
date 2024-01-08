@@ -33,13 +33,13 @@ class MyCNNModel(nn.Module):
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(16 * 112 * 112, 256)
         self.relu3 = nn.ReLU()
-        self.fc2 = nn.Linear(256, 5)  # Assuming 10 classes for classification
+        self.fc2 = nn.Linear(256, 5)  # Assuming 5 classes for classification
 
     def forward(self, x):
         x = self.pool1(self.relu1(self.conv1(x)))
         x = self.flatten(x)
         x = self.relu3(self.fc1(x))
-        x = self.fc2(x)
+        x = F.softmax(self.fc2(x), dim=1)
         return x
 
 import torch
