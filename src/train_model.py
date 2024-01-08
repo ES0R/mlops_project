@@ -8,9 +8,9 @@ import argparse
 import hydra
 from tqdm import tqdm
 
-split_index = 150
+
 model_now = "CNN"
-epochs = 10
+epochs = 4
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
