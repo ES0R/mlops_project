@@ -111,6 +111,8 @@ mean_value = images_tensor.mean()
 std_value = images_tensor.std()
 train_images_tensor = (images_tensor - mean_value) / std_value
 
+print("normal")
+
 """
 n = images_tensor.shape[0]
 
@@ -131,8 +133,12 @@ if not os.path.exists(save_path):
 
 torch.save(train_images_tensor, os.path.join(save_path, 'train_images_tensor.pt'))
 
+print("save1")
+
 # Save labels tensor
 torch.save(labels_tensor, os.path.join(save_path, 'train_target_tensor.pt'))
+
+print("save2")
 
 # Save label encoder
 torch.save(label_encoder, os.path.join(save_path, 'label_encoder.pt'))
