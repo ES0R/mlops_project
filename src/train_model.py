@@ -6,9 +6,10 @@ from models.model import MyCNNModel, UNet   # Assuming you save the CNN model in
 import matplotlib.pyplot as plt
 import argparse
 import hydra
+from tqdm import tqdm
 
 split_index = 1000
-model_now = "MyCNNModel"
+model_now = "CNN"
 epochs = 10
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -63,28 +64,27 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataset = TensorDataset(val_images_tensor, val_target_tensor)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
+
+print("Training begins")
+
 # Training loop
 for epoch in range(epochs):
     model.train()
     total_loss = 0.0
 
-    for batch_images, batch_targets in train_loader:
-        # Forward pass
+    # Use tqdm for the training loop
+    for batch_images, batch_targets in tqdm(train_loader, desc=f'Training - Epoch [{epoch + 1}/{epochs}]'):
         batch_images = batch_images.to(device)
         batch_targets = batch_targets.to(device)
         outputs = model(batch_images)
 
-        # Compute the loss
         loss = criterion(outputs, batch_targets)
-
-        # Backward pass and optimization
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
         total_loss += loss.item()
 
-    # Print the average training loss for the epoch
     average_loss = total_loss / len(train_loader)
     print(f'Training - Epoch [{epoch + 1}/{epochs}], Loss: {average_loss:.4f}')
 
@@ -94,23 +94,22 @@ for epoch in range(epochs):
     total_val = 0
     val_loss = 0.0
 
-    with torch.no_grad():
-        for batch_images_val, batch_targets_val in val_loader:
-            batch_images_val = batch_images_val.to(device)
-            batch_targets_val = batch_targets_val.to(device)
+    # Use tqdm for the validation loop
+    for batch_images_val, batch_targets_val in tqdm(val_loader, desc=f'Validation - Epoch [{epoch + 1}/{epochs}]'):
+        batch_images_val = batch_images_val.to(device)
+        batch_targets_val = batch_targets_val.to(device)
 
-            outputs_val = model(batch_images_val)
-            loss_val = criterion(outputs_val, batch_targets_val)
-            val_loss += loss_val.item()
+        outputs_val = model(batch_images_val)
+        loss_val = criterion(outputs_val, batch_targets_val)
+        val_loss += loss_val.item()
 
-            _, predicted_val = torch.max(outputs_val.data, 1)
-            total_val += batch_targets_val.size(0)
-            correct_val += (predicted_val == batch_targets_val).sum().item()
+        _, predicted_val = torch.max(outputs_val.data, 1)
+        total_val += batch_targets_val.size(0)
+        correct_val += (predicted_val == batch_targets_val).sum().item()
 
-    # Print the average validation loss and accuracy for the epoch
     average_val_loss = val_loss / len(val_loader)
     accuracy_val = correct_val / total_val
     print(f'Validation - Epoch [{epoch + 1}/{epochs}], Loss: {average_val_loss:.4f}, Accuracy: {accuracy_val:.4f}')
 
 # Optionally, save your trained model
-# torch.save(model.state_dict(), 'trained_model.pth')
+torch.save(model.state_dict(), 'models/trained_model.pth')

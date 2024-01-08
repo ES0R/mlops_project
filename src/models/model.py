@@ -26,20 +26,35 @@ class MyCNNModel(nn.Module):
     def __init__(self):
         super(MyCNNModel, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
+        # Convolutional layers
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
         self.relu1 = nn.ReLU()
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(16 * 112 * 112, 256)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.relu2 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
         self.relu3 = nn.ReLU()
-        self.fc2 = nn.Linear(256, 5)  # Assuming 5 classes for classification
+        self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
+
+        # Fully connected layers
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(128 * 28 * 28, 512)  # Adjust the input size based on your input image size
+        self.relu4 = nn.ReLU()
+        self.fc2 = nn.Linear(512, 256)
+        self.relu5 = nn.ReLU()
+        self.fc3 = nn.Linear(256, 120)  # Output layer with 120 classes
 
     def forward(self, x):
         x = self.pool1(self.relu1(self.conv1(x)))
+        x = self.pool2(self.relu2(self.conv2(x)))
+        x = self.pool3(self.relu3(self.conv3(x)))
         x = self.flatten(x)
-        x = self.relu3(self.fc1(x))
-        x = F.softmax(self.fc2(x), dim=1)
+        x = self.relu4(self.fc1(x))
+        x = self.relu5(self.fc2(x))
+        x = self.fc3(x)  # Remove softmax activation
         return x
 
 import torch

@@ -5,21 +5,24 @@ import os
 
 # Path to the saved tensors and label encoder
 save_path = "../../data/processed"
-tensor_filename ="train_images_tensor.pt" 
-labels_filename ="train_target_tensor.pt" 
-label_encoder_filename =  "label_encoder.pt"
-
+tensor_filename = "train_images_tensor.pt"
+labels_filename = "train_target_tensor.pt"
+label_encoder_filename = "label_encoder.pt"
 
 # Load the saved tensors and label encoder
 loaded_tensor = torch.load(os.path.join(save_path, tensor_filename))
 labels_tensor = torch.load(os.path.join(save_path, labels_filename))
 label_encoder = torch.load(os.path.join(save_path, label_encoder_filename))
 
+# Get the number of examples in the dataset
+num_examples = len(loaded_tensor)
 
-# Extract 5 example images and their corresponding labels from the tensors
-num_examples = 5
-example_images = loaded_tensor[:num_examples]
-example_labels = labels_tensor[:num_examples]
+# Randomly select 5 indices
+random_indices = torch.randperm(num_examples)[:5]
+
+# Use the random indices to extract 5 random example images and labels
+example_images = loaded_tensor[random_indices]
+example_labels = labels_tensor[random_indices]
 
 # Define a function to display images with corresponding labels and class mapping
 def show_images_with_labels(images, labels, label_encoder):
@@ -42,7 +45,7 @@ def show_images_with_labels(images, labels, label_encoder):
 
     plt.show()
 
-# Display the example images with corresponding labels and class mapping
+# Display the 5 random example images with corresponding labels and class mapping
 show_images_with_labels(example_images, example_labels, label_encoder)
 
 # Print the mapping of class numbers to strings
