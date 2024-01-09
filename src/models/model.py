@@ -57,30 +57,51 @@ class MyCNNModel(nn.Module):
         x = self.fc3(x)
         return x
 
-class SimpleCNNModel(nn.Module):
-    def __init__(self):
-        super(SimpleCNNModel, self).__init__()
+class MyImprovedCNNModel(nn.Module):
+    def __init__(self, dropout_rate=0.5):
+        super(MyImprovedCNNModel, self).__init__()
 
-        self.conv_blocks = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-        )
+        # Convolutional layers
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
+        self.relu1 = nn.ReLU()
+        self.batchnorm1 = nn.BatchNorm2d(32)
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.dropout1 = nn.Dropout2d(p=dropout_rate)
 
-        self.fc_layers = nn.Sequential(
-            nn.Linear(128 * 56 * 56, 512),
-            nn.ReLU(),
-            nn.Linear(512, 6)  # Output layer with 6 classes
-        )
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.relu2 = nn.ReLU()
+        self.batchnorm2 = nn.BatchNorm2d(64)
+        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.dropout2 = nn.Dropout2d(p=dropout_rate)
+
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+        self.relu3 = nn.ReLU()
+        self.batchnorm3 = nn.BatchNorm2d(128)
+        self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.dropout3 = nn.Dropout2d(p=dropout_rate)
+
+        # Fully connected layers
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(128 * 28 * 28, 512)
+        self.relu4 = nn.ReLU()
+        self.batchnorm4 = nn.BatchNorm1d(512)
+        self.dropout4 = nn.Dropout(p=dropout_rate)
+
+        self.fc2 = nn.Linear(512, 256)
+        self.relu5 = nn.ReLU()
+        self.batchnorm5 = nn.BatchNorm1d(256)
+        self.dropout5 = nn.Dropout(p=dropout_rate)
+
+        self.fc3 = nn.Linear(256, 6)
 
     def forward(self, x):
-        x = self.conv_blocks(x)
-        x = x.view(x.size(0), -1)  # Flatten the feature map
-        x = self.fc_layers(x)
+        x = self.pool1(self.dropout1(self.relu1(self.batchnorm1(self.conv1(x)))))
+        x = self.pool2(self.dropout2(self.relu2(self.batchnorm2(self.conv2(x)))))
+        x = self.pool3(self.dropout3(self.relu3(self.batchnorm3(self.conv3(x)))))
+        x = self.flatten(x)
+        x = self.dropout4(self.relu4(self.batchnorm4(self.fc1(x))))
+        x = self.dropout5(self.relu5(self.batchnorm5(self.fc2(x))))
+        x = self.fc3(x)
         return x
 
 
@@ -89,7 +110,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class UNet(nn.Module):
-    def __init__(self, num_classes=5):
+    def __init__(self, num_classes=6):
         super(UNet, self).__init__()
 
         # Contracting Path (Encoder)
