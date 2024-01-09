@@ -2,15 +2,15 @@ import torch
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 from models.model import MyAwesomeModel
-from models.model import MyCNNModel, UNet, SimpleCNNModel   # Assuming you save the CNN model in cnn_model.py
+from models.model import MyCNNModel, UNet, MyImprovedCNNModel   # Assuming you save the CNN model in cnn_model.py
 import matplotlib.pyplot as plt
 import argparse
 import hydra
 from tqdm import tqdm
 
 
-model_now = "CNN"
-epochs = 4
+model_now = "ADV"
+epochs = 15
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -37,10 +37,10 @@ elif model_now == 'UNet':
     model = UNet().to(device)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-elif model_now == 'Simple':
-    model = SimpleCNNModel().to(device)
+elif model_now == 'ADV':
+    model = MyImprovedCNNModel().to(device)
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.003)
 else:
     raise ValueError('Invalid model choice.')
 
@@ -140,23 +140,28 @@ plt.figure(figsize=(12, 4))
 plt.subplot(1, 2, 1)
 plt.plot(epochs_range, train_losses, label='Training Loss')
 plt.plot(epochs_range, val_losses, label='Validation Loss')
+plt.scatter(epochs_range, train_losses, label='Training Loss')
+plt.scatter(epochs_range, val_losses, label='Validation Loss')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
+plt.grid()
 plt.title('Training and Validation Loss')
 
 # Plotting training and validation accuracy
 plt.subplot(1, 2, 2)
 plt.plot(epochs_range, train_accuracies, label='Training Accuracy')
 plt.plot(epochs_range, val_accuracies, label='Validation Accuracy')
+plt.scatter(epochs_range, train_accuracies, label='Training Accuracy')
+plt.scatter(epochs_range, val_accuracies, label='Validation Accuracy')
 plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
 plt.title('Training and Validation Accuracy')
-
+plt.grid()
 plt.tight_layout()
 plt.show()
 
 
 # Optionally, save your trained model
-torch.save(model.state_dict(), 'models/trained_model.pth')
+torch.save(model.state_dict(), 'models/trained_model_'+model_now+'_.pth')
