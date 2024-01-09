@@ -7,10 +7,25 @@ import matplotlib.pyplot as plt
 import argparse
 import hydra
 from tqdm import tqdm
+import wandb
+
 
 
 model_now = "ADV"
 epochs = 15
+
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="MLOps-Project",
+    
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": 0.001,
+    "architecture": model_now,
+    "dataset": "Dogs",
+    "epochs": epochs,
+    }
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -124,6 +139,7 @@ for epoch in range(epochs):
     average_val_loss = val_loss / len(val_loader)
     accuracy_val = correct_val / total_val
     print(f'Validation - Epoch [{epoch + 1}/{epochs}], Loss: {average_val_loss:.4f}, Accuracy: {accuracy_val:.4f}')
+    wandb.log({"Validation Loss": average_val_loss})
 
     # Save values for plotting
     train_losses.append(average_loss)
