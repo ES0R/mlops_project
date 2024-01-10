@@ -12,12 +12,12 @@ import wandb
 
 
 model_now = "ADV"
-epochs = 15
+epochs = 4
 
 wandb.init(
     # set the wandb project where this run will be logged
     project="MLOps-Project",
-    
+    name="I am the daddy",
     # track hyperparameters and run metadata
     config={
     "learning_rate": 0.001,
@@ -116,7 +116,7 @@ for epoch in range(epochs):
     average_loss = total_loss / len(train_loader)
     accuracy_train = correct_train / total_train
     print(f'Training - Epoch [{epoch + 1}/{epochs}], Loss: {average_loss:.4f}, Accuracy: {accuracy_train:.4f}')
-
+    
     # Validation
     model.eval()
     correct_val = 0
@@ -139,7 +139,7 @@ for epoch in range(epochs):
     average_val_loss = val_loss / len(val_loader)
     accuracy_val = correct_val / total_val
     print(f'Validation - Epoch [{epoch + 1}/{epochs}], Loss: {average_val_loss:.4f}, Accuracy: {accuracy_val:.4f}')
-    wandb.log({"Validation Loss": average_val_loss})
+    wandb.log({"Training Loss": average_loss, "Training Accuracy": accuracy_train, "Validation Loss": average_val_loss, "Validation Accuracy": accuracy_val})
 
     # Save values for plotting
     train_losses.append(average_loss)
@@ -177,6 +177,8 @@ plt.title('Training and Validation Accuracy')
 plt.grid()
 plt.tight_layout()
 plt.show()
+
+wandb.finish()
 
 
 # Optionally, save your trained model
