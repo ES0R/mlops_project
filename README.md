@@ -28,6 +28,21 @@ A list of frameworks the projects aims to include:
 
 Run `dvc remote add -d storage gs://mlops-data-dog/` then `dvc pull`. 
 
+### Data loader
+
+`make_data.py` is a script for preparing image datasets, supporting both complete and sparse dataset creation.
+- **Complete Dataset**: Processes all images and annotations.
+- **Sparse Dataset**: Choose classes by name or index from `class_mapping.yaml`
+
+
+## Usage
+```bash
+# Process the complete dataset
+python make_data.py --dataset complete
+
+# Process a sparse dataset with specific classes
+python make_data.py --dataset sparse --classes 0 1 "Airedale"
+```
 
 ## Project structure
 
