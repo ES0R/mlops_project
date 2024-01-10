@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Path to the saved tensors and label encoder
-save_path = "../../data/processed"
+save_path = "data/processed"
 tensor_filename = "train_images_tensor.pt"
 labels_filename = "train_target_tensor.pt"
 label_encoder_filename = "label_encoder.pt"
@@ -53,6 +53,7 @@ class_mapping = dict(enumerate(label_encoder.classes_))
 print("Class Mapping:", class_mapping)
 print(labels_tensor.size())
 print(loaded_tensor.size())
+print(loaded_tensor)
 
 # Print the number of unique classes
 num_classes = len(label_encoder.classes_)
