@@ -24,6 +24,10 @@ A list of frameworks the projects aims to include:
 | Pytorch-lightning   | Reduce boilerplate Code |
 | Pytorch   | Deep learning framework |
 
+## Data
+
+Run `dvc remote add -d storage gs://mlops-data-dog/` then `dvc pull`. 
+
 
 ## Project structure
 
