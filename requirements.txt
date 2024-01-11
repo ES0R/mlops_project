@@ -13,3 +13,4 @@ uvicorn==0.25.0
 python-multipart==0.0.6
 dvc==3.38.1
 dvc[gs]
+pytest==7.4.4
