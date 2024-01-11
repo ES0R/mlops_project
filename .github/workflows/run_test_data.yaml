@@ -24,11 +24,13 @@ jobs:
       - name: Install dependencies and make Data
         run: |
           pip install -r requirements.txt
-          dvc remote add -d storage gs://mlops-data-dog/
-          dvc pull
-          python ./src/data/make_dataset.py --dataset complete
           # If you have other dependencies, install them here
     
-  
+      - name: DVC
+        run: |
+         dvc remote add -d storage gs://mlops-data-dog/
+         dvc pull
+         python ./src/data/make_dataset.py --dataset complete    
+
       - name: Run pytest
         run: pytest tests/test_dataloading.py  # Runs pytest on your test file
