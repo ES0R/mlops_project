@@ -15,16 +15,20 @@ jobs:
   
       steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'  # Specify the Python version
   
-      - name: Install dependencies
+      - name: Install dependencies and make Data
         run: |
           pip install -r requirements.txt
+          dvc remote add -d storage gs://mlops-data-dog/
+          dvc pull
+          python ./src/data/make_dataset.py --dataset complete
           # If you have other dependencies, install them here
+    
   
       - name: Run pytest
         run: pytest tests/test_dataloading.py  # Runs pytest on your test file
