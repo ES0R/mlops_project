@@ -36,6 +36,12 @@ def load_image(image_path, transform):
         logging.error(f"Error processing image {image_path}: {e}")
         return None
 
+def count_classes_from_mapping(file_path):
+    with open(file_path, 'r') as file:
+        class_mapping = yaml.safe_load(file)
+    return len(class_mapping)
+
+
 def load_images(root_folder, selected_classes=None, class_mapping=None):
     image_list = []
     transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
@@ -57,7 +63,8 @@ def load_images(root_folder, selected_classes=None, class_mapping=None):
     for subdir, dirs, files in os.walk(root_folder):
         label = subdir.split(os.sep)[-1].split('-')[-1]
         if selected_classes is None or label in selected_classes:
-            logging.info(f"Processing subdir: {processed_count}/{len(selected_classes)} - {label}")
+            processed_folder_count = len(selected_classes) if selected_classes else len(class_mapping)+1
+            logging.info(f"Processing subdir: {processed_count}/{processed_folder_count} - {label}")
             for file in files:
                 if file.lower().endswith(('.png', '.jpg', '.jpeg')):
                     image_path = os.path.join(subdir, file)
@@ -79,15 +86,15 @@ def extract_name_from_xml(file_path, selected_classes=None):
     try:
         tree = ET.parse(file_path)
         root = tree.getroot()
-        names = []
         for obj in root.findall(".//object"):
             name_element = obj.find("name")
-            if name_element is not None and name_element.text in selected_classes:
-                names.append(name_element.text)
-        return names
+            if name_element is not None and (selected_classes is None or name_element.text in selected_classes):
+                return name_element.text
+        return None  # Return None if no relevant label is found
     except Exception as e:
         logging.error(f"Error processing XML file {file_path}: {e}")
-        return []
+        return None
+
 
 
 def process_folder(folder_path, selected_classes=None):
@@ -99,10 +106,11 @@ def process_folder(folder_path, selected_classes=None):
         xml_files = [file for file in os.listdir(os.path.join(folder_path, folder))]
         for file_name in xml_files:
             file_path = os.path.join(folder_path, folder, file_name)
-            names = extract_name_from_xml(file_path, selected_classes)
-            if names:
-                res.extend(names)
+            name = extract_name_from_xml(file_path, selected_classes)
+            if name:
+                res.append(name)
     return res
+
 
 
 def normalize_tensor(tensor):

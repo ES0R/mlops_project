@@ -38,10 +38,10 @@ Run `dvc remote add -d storage gs://mlops-data-dog/` then `dvc pull`.
 ## Usage
 ```bash
 # Process the complete dataset
-python make_data.py --dataset complete
+python ./src/data/make_dataset.py --dataset complete
 
 # Process a sparse dataset with specific classes
-python make_data.py --dataset sparse --classes 0 1 "Airedale"
+python ./src/data/make_dataset.py --dataset sparse --classes 0 1 "Airedale"
 ```
 
 ## Project structure
