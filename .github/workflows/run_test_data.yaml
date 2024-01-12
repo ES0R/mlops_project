@@ -2,9 +2,9 @@ name: Run Test Dataloading
 
 on:
   push:
-    branches: [master]
+    branches: [github_actions]
   pull_request:
-    branches: [master]
+    branches: [github_actions]
   schedule:
     - cron: "0 13 * * 1"  # run every Monday at 13:00 UTC
 
@@ -31,7 +31,7 @@ jobs:
         run: |
          dvc remote add -f -d storage gs://mlops-data-dog/
          dvc pull
-         python ./src/data/make_dataset.py --dataset complete    
+         python ./src/data/make_dataset.py --dataset sparse --classes 0    
 
       - name: Run Pytest
         run: pytest tests/test_dataloading.py
