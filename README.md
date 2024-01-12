@@ -26,7 +26,7 @@ A list of frameworks the projects aims to include:
 
 ## Data
 
-Run `dvc remote add -d storage gs://mlops-data-dog/` then `dvc pull`. 
+Run `dvc remote add -f -d storage gs://mlops-data-dog/` then `dvc pull`. 
 
 ### Data loader
 
