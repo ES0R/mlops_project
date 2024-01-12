@@ -21,16 +21,16 @@ jobs:
         with:
           python-version: '3.10'  # Specify the Python version
   
-      - name: Install dependencies and make Data
+      - name: Install Dependencies w/ requirements.txt
         run: |
           pip install -r requirements.txt
           # If you have other dependencies, install them here
     
-      - name: DVC
+      - name: DVC to get raw data
         run: |
-         dvc remote add -d storage gs://mlops-data-dog/
+         dvc remote add -f -d storage gs://mlops-data-dog/
          dvc pull
          python ./src/data/make_dataset.py --dataset complete    
 
-      - name: Run pytest
-        run: pytest tests/test_dataloading.py  # Runs pytest on your test file
+      - name: Run Pytest
+        run: pytest tests/test_dataloading.py
