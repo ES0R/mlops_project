@@ -52,16 +52,18 @@ The directory structure of the project looks like this:
 
 ├── Makefile             <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md            <- The top-level README for developers using this project.
+├── config
+│   ├── data             <- Contains config for data loading
+│   ├── hyperparameter   <- Contains config for training hyper parameters
+│   ├── model            <- Contains config for model
+│   └── config.yaml      <- Combines config for data, hyperparameter and model
 ├── data
 │   ├── processed        <- The final, canonical data sets for modeling.
 │   └── raw              <- The original, immutable data dump.
 │
 ├── docs                 <- Documentation folder
-│   │
 │   ├── index.md         <- Homepage for your documentation
-│   │
 │   ├── mkdocs.yml       <- Configuration file for mkdocs
-│   │
 │   └── source/          <- Source directory for documentation files
 │
 ├── models               <- Trained and serialized models, model predictions, or model summaries

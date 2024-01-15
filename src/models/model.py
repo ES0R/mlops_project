@@ -1,61 +1,52 @@
-import torch
-from torch import nn
+import torch.nn as nn
 import torch.nn.functional as F
+import pytorch_lightning as pl
 
-class MyAwesomeModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.fc1 = nn.Linear(3*224*224, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 32)
-        self.fc4 = nn.Linear(32, 10)
-        self.dropout = nn.Dropout(p=0.2)
-        
-    def forward(self, x):
-        # make sure input tensor is flattened
-        x = x.view(x.shape[0], -1)
-        
-        x = self.dropout(F.relu(self.fc1(x)))
-        x = self.dropout(F.relu(self.fc2(x)))
-        x = self.dropout(F.relu(self.fc3(x)))
-        x = F.log_softmax(self.fc4(x), dim=1)
-        
-        return x
+class CustomCNN(nn.Module):
+    def __init__(self, cfg):
+        super(CustomCNN, self).__init__()
+        self.cfg = cfg
 
-class MyCNNModel(nn.Module):
-    def __init__(self):
-        super(MyCNNModel, self).__init__()
+        # Creating Convolutional Layers
+        self.conv_layers = nn.ModuleList()
+        in_channels = cfg.input_channels
+        for conv_cfg in cfg.conv_layers:
+            self.conv_layers.append(nn.Conv2d(in_channels, conv_cfg.out_channels, conv_cfg.kernel_size, stride=conv_cfg.stride, padding=conv_cfg.padding))
+            in_channels = conv_cfg.out_channels
 
-        # Convolutional layers
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
-        self.relu1 = nn.ReLU()
-        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Creating Fully Connected Layers
+        self.fc_layers = nn.ModuleList()
+        in_features = self._calculate_conv_output_size()  # Implement this method based on your input size and architecture
+        for fc_cfg in cfg.fc_layers:
+            self.fc_layers.append(nn.Linear(in_features, fc_cfg.out_features))
+            in_features = fc_cfg.out_features
 
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
-        self.relu2 = nn.ReLU()
-        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
-        self.relu3 = nn.ReLU()
-        self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-        # Fully connected layers
-        self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(128 * 28 * 28, 512)  # Adjust the input size based on your input image size
-        self.relu4 = nn.ReLU()
-        self.fc2 = nn.Linear(512, 256)
-        self.relu5 = nn.ReLU()
-        self.fc3 = nn.Linear(256, 6)  # Output layer with 120 classes
+        self.output = nn.Linear(in_features, cfg.output_classes)
+        self.dropout = nn.Dropout(cfg.dropout_rate)
 
     def forward(self, x):
-        x = self.pool1(self.relu1(self.conv1(x)))
-        x = self.pool2(self.relu2(self.conv2(x)))
-        x = self.pool3(self.relu3(self.conv3(x)))
-        x = self.flatten(x)
-        x = self.relu4(self.fc1(x))
-        x = self.relu5(self.fc2(x))
-        x = self.fc3(x)
+        # Forward pass through Conv layers with ReLU and pooling
+        for conv_layer in self.conv_layers:
+            x = F.relu(conv_layer(x))
+            x = F.max_pool2d(x, self.cfg.pool_size)
+
+        # Flatten
+        x = x.view(x.size(0), -1)
+
+        # Forward pass through FC layers with ReLU and dropout
+        for fc_layer in self.fc_layers:
+            x = F.relu(fc_layer(x))
+            x = self.dropout(x)
+
+        # Output layer
+        x = self.output(x)
         return x
+
+    def _calculate_conv_output_size(self):
+        # Dummy pass to calculate output size
+        # Implement this based on your specific architecture and input size
+        pass
+
 
 class MyImprovedCNNModel(nn.Module):
     def __init__(self, dropout_rate=0.5):
@@ -103,73 +94,3 @@ class MyImprovedCNNModel(nn.Module):
         x = self.dropout5(self.relu5(self.batchnorm5(self.fc2(x))))
         x = self.fc3(x)
         return x
-
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
-class UNet(nn.Module):
-    def __init__(self, num_classes=6):
-        super(UNet, self).__init__()
-
-        # Contracting Path (Encoder)
-        self.enc_conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
-        self.enc_conv2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-        self.enc_conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
-        self.enc_conv4 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
-        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-        # Middle Part
-        self.middle_conv1 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
-        self.middle_conv2 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
-
-        # Expanding Path (Decoder)
-        self.up_conv1 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
-        self.dec_conv1 = nn.Conv2d(256, 128, kernel_size=3, padding=1)
-        self.dec_conv2 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
-
-        self.up_conv2 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
-        self.dec_conv3 = nn.Conv2d(128, 64, kernel_size=3, padding=1)
-        self.dec_conv4 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-
-        # Global Average Pooling
-        self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-
-        # Final Classifier
-        self.final_fc = nn.Linear(64, num_classes)
-
-    def forward(self, x):
-        # Encoder
-        e1 = F.relu(self.enc_conv1(x))
-        e1 = F.relu(self.enc_conv2(e1))
-        e1_pool = self.pool1(e1)
-
-        e2 = F.relu(self.enc_conv3(e1_pool))
-        e2 = F.relu(self.enc_conv4(e2))
-        e2_pool = self.pool2(e2)
-
-        # Middle
-        m = F.relu(self.middle_conv1(e2_pool))
-        m = F.relu(self.middle_conv2(m))
-
-        # Decoder
-        d1 = self.up_conv1(m)
-        d1 = torch.cat((e2, d1), dim=1)
-        d1 = F.relu(self.dec_conv1(d1))
-        d1 = F.relu(self.dec_conv2(d1))
-
-        d2 = self.up_conv2(d1)
-        d2 = torch.cat((e1, d2), dim=1)
-        d2 = F.relu(self.dec_conv3(d2))
-        d2 = F.relu(self.dec_conv4(d2))
-
-        # Global Average Pooling
-        pooled = self.global_avg_pool(d2)
-        pooled = pooled.view(pooled.size(0), -1)  # Flatten the output
-
-        # Classifier
-        out = self.final_fc(pooled)
-        return out
