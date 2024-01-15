@@ -10,7 +10,7 @@ from tqdm import tqdm
 import wandb
 
 model_now = "ADV"
-epochs = 4
+epochs = 5
 
 wandb.init(
     # set the wandb project where this run will be logged
