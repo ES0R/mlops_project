@@ -8,6 +8,10 @@ from src.models.model import MyImprovedCNNModel  # Update the import statement i
 from torchvision import transforms
 from PIL import Image
 import matplotlib.pyplot as plt
+import random
+from torchvision.transforms.functional import to_pil_image
+
+
 
 # Load the saved model
 model = MyImprovedCNNModel()
@@ -42,6 +46,7 @@ def predict_image(image: Image.Image):
     with torch.no_grad():
         output = model(processed_image.unsqueeze(0))  # Add batch dimension
         probabilities = torch.nn.functional.softmax(output[0], dim=0)
+        print(probabilities)
         top5_probabilities, top5_classes = torch.topk(probabilities, 5)
         
         # Get the predicted class labels from the label encoder
@@ -49,10 +54,35 @@ def predict_image(image: Image.Image):
     
     return predicted_labels, top5_probabilities.cpu().numpy()
 
+
+def select_random_images(base_path, num_images=2):
+    # List all subdirectories in the base path
+    subdirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+
+    selected_images = []
+
+    for _ in range(num_images):
+        # Randomly select a subdirectory
+        subdir = random.choice(subdirs)
+        subdir_path = os.path.join(base_path, subdir)
+
+        # List all files in the selected subdirectory
+        files = [f for f in os.listdir(subdir_path) if os.path.isfile(os.path.join(subdir_path, f))]
+
+        if files:
+            # Randomly select a file
+            file = random.choice(files)
+            selected_images.append(os.path.join(subdir_path, file))
+
+    return selected_images
+
 if __name__ == "__main__":
     # Load and preprocess new images
-    new_image_paths = ["data/raw/images_dog_small/n02110958-pug/n02110958_353.jpg", "data/raw/images_dog_small/n02110185-Siberian_husky/n02110185_699.jpg"]  # Replace with actual file paths
-    new_images = [Image.open(path) for path in new_image_paths]
+    base_path = 'data/raw/images/Images'
+    
+    random_images = select_random_images(base_path, num_images=2)
+
+    new_images = [(Image.open(path)) for path in random_images]
 
     # Run inference on new images
     for i, image in enumerate(new_images):
