@@ -23,8 +23,7 @@ class ImageClassifier(pl.LightningModule):
     def __init__(self, cfg):
         super(ImageClassifier, self).__init__()
         self.cfg = cfg
-        model_cfg = getattr(cfg.models, cfg.default_model)  
-        self.model = CustomCNN()
+        self.model = MyImprovedCNNModel()
         self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):

@@ -25,5 +25,3 @@ models:
       - out_features: 128
     output_classes: 10
     dropout_rate: 0.5
-  vit:
-    name: vit
