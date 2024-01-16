@@ -23,7 +23,7 @@ class ImageClassifier(pl.LightningModule):
     def __init__(self, cfg):
         super(ImageClassifier, self).__init__()
         self.cfg = cfg
-        self.model = CustomCNN()
+        self.model = CustomCNN(cfg)
         self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):
@@ -65,7 +65,7 @@ class ImageClassifier(pl.LightningModule):
     # return [wandb_logger]
 
 def get_run_name(cfg):
-    model_name = cfg.models.base.name
+    model_name = cfg.models.cnn.name
     current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     return f"{model_name}_{current_time}"
 

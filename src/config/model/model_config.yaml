@@ -8,6 +8,7 @@ hyperparameters:
   optim: adamw
 models:
   cnn:
+    name: cnn
     input_channels: 3
     conv_layers:
       - out_channels: 32
@@ -27,7 +28,7 @@ models:
         dropout: 0.3
     pool_size: 2
     fc_layers:
-      - in_features: 1024  # Adjust this based on your input size
+      - in_features: N/A  
         out_features: 512
         dropout: 0.4
       - in_features: 512

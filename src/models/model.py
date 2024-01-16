@@ -1,55 +1,66 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-
+import torch
 
 class CustomCNN(nn.Module):
     def __init__(self, cfg):
-        super(MyImprovedCNNModel, self).__init__()
-
+        super(CustomCNN, self).__init__()
         # Convolutional layers
         self.conv_layers = nn.ModuleList()
-        in_channels = cfg.input_channels
+        in_channels = cfg.models.cnn.input_channels
 
-        for layer_cfg in cfg.conv_layers:
+        self.last_conv_output_channels = None
+        for layer_cfg in cfg.models.cnn.conv_layers:
             self.conv_layers.append(
                 nn.Sequential(
                     nn.Conv2d(in_channels, layer_cfg.out_channels, kernel_size=layer_cfg.kernel_size, stride=layer_cfg.stride, padding=layer_cfg.padding),
                     nn.ReLU(),
                     nn.BatchNorm2d(layer_cfg.out_channels),
-                    nn.MaxPool2d(kernel_size=cfg.pool_size, stride=2),
-                    nn.Dropout2d(p=cfg.dropout_rate)
+                    nn.MaxPool2d(kernel_size=cfg.models.cnn.pool_size, stride=2),
+                    nn.Dropout2d(p=layer_cfg.dropout)
                 )
             )
             in_channels = layer_cfg.out_channels
+            self.last_conv_output_channels = layer_cfg.out_channels
+
+        # Dynamically calculate the in_features for the first fully connected layer
+        self.in_features_fc = self._calculate_conv_output_size(cfg)
 
         # Fully connected layers
         self.fc_layers = nn.ModuleList()
-        in_features = cfg.fc_layers[0].in_features
-
-        for fc_layer in cfg.fc_layers:
+        in_features = self.in_features_fc
+        for fc_layer in cfg.models.cnn.fc_layers:
             self.fc_layers.append(
                 nn.Sequential(
                     nn.Linear(in_features, fc_layer.out_features),
                     nn.ReLU(),
                     nn.BatchNorm1d(fc_layer.out_features),
-                    nn.Dropout(p=cfg.dropout_rate)
+                    nn.Dropout(p=fc_layer.dropout)
+                )
             )
-        )
-        in_features = fc_layer.out_features
-        self.output = nn.Linear(in_features, cfg.output_classes)
+            in_features = fc_layer.out_features
 
-def forward(self, x):
-    for conv_layer in self.conv_layers:
-        x = conv_layer(x)
+        self.output = nn.Linear(in_features, cfg.models.cnn.output_classes)
 
-    x = torch.flatten(x, 1)  # Flatten the output for the fully connected layer
+    def _calculate_conv_output_size(self, cfg):
+        image_size = 224  # Example image size (224x224)
+        for layer_cfg in cfg.models.cnn.conv_layers:
+            image_size = (image_size + 2 * layer_cfg.padding - layer_cfg.kernel_size) // layer_cfg.stride + 1
+            image_size = image_size // 2  # Pooling layer
+        return image_size * image_size * self.last_conv_output_channels
 
-    for fc_layer in self.fc_layers:
-        x = fc_layer(x)
+    def forward(self, x):
+        for conv_layer in self.conv_layers:
+            x = conv_layer(x)
 
-    x = self.output(x)
-    return x
+        #x = torch.flatten(x, 1)  # Flatten the output for the fully connected layer
+        x = x.view(x.size(0), -1)
+        for fc_layer in self.fc_layers:
+            x = fc_layer(x)
+
+        x = self.output(x)
+        return x
 
 
 class MyImprovedCNNModel(nn.Module):
