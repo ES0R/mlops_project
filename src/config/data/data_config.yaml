@@ -1,0 +1,6 @@
+image_data: "data/processed/train_images_tensor.pt"
+target_data: "data/processed/train_target_tensor.pt"
+num_workers: 4
+train_val_split:
+- 0.8
+- 0.2

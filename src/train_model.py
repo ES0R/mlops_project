@@ -127,7 +127,8 @@ def train(cfg: DictConfig):
         accelerator="auto",  
         callbacks=[checkpoint_callback],
         enable_checkpointing=True, #TODO ---------------------------------  
-        enable_progress_bar=True  
+        enable_progress_bar=True,  
+        log_every_n_steps=10  
     )
 
     # Train the model

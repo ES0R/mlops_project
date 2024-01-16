@@ -1,0 +1,37 @@
+default_model: cnn
+
+hyperparameters:
+  lr: 0.001
+  wd: 0.00001
+  batch_size: 32
+  epochs: 10
+  optim: "adamw"
+models: 
+  base:
+    name: ViT
+    input_channels: 3
+    num_classes: 10
+    features: [32, 64]
+    kernel_sizes: [3, 3]
+    strides: [1, 1]
+    pool: 2
+    fc_features: 512
+    dropout_rate: 0.5
+  cnn:
+    name: cnn
+    input_channels: 3
+    conv_layers:
+      - out_channels: 32
+        kernel_size: 3
+        stride: 1
+        padding: 1
+      - out_channels: 64
+        kernel_size: 3
+        stride: 1
+        padding: 1
+    pool_size: 2
+    fc_layers:
+      - out_features: 512
+      - out_features: 128
+    output_classes: 10
+    dropout_rate: 0.5

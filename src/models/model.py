@@ -83,7 +83,7 @@ class MyImprovedCNNModel(nn.Module):
         self.batchnorm5 = nn.BatchNorm1d(256)
         self.dropout5 = nn.Dropout(p=dropout_rate)
 
-        self.fc3 = nn.Linear(256, 6)
+        self.fc3 = nn.Linear(256, 10)
 
     def forward(self, x):
         x = self.pool1(self.dropout1(self.relu1(self.batchnorm1(self.conv1(x)))))
