@@ -6,7 +6,7 @@ import os
 os.environ['HYDRA_FULL_ERROR'] = '1'
 import hydra
 from omegaconf import DictConfig
-from models.model import CustomCNN, MyImprovedCNNModel  # Adjust path according to your project structure
+from models.model import CustomCNN, MyImprovedCNNModel,ViTModel  # Adjust path according to your project structure
 from lightning.pytorch import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint
 import warnings
@@ -23,7 +23,7 @@ class ImageClassifier(pl.LightningModule):
     def __init__(self, cfg):
         super(ImageClassifier, self).__init__()
         self.cfg = cfg
-        self.model = MyImprovedCNNModel()
+        self.model = ViTModel()
         self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):

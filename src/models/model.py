@@ -1,6 +1,26 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
+import timm
+
+class ViTModel(nn.Module):
+    def __init__(self):
+        super(ViTModel, self).__init__()
+        
+        # Load a pretrained Vision Transformer model
+        self.vit_model = timm.create_model("vit_base_patch16_224", pretrained=True)
+
+        # Modify the classifier head for your specific task
+        in_features = self.vit_model.head.in_features  # Get the number of input features for the classifier head
+        self.vit_model.head = nn.Sequential(
+            nn.Linear(in_features, 5),
+            nn.Dropout(0.2)
+        )
+
+    def forward(self, x):
+        # Forward pass through the ViT model
+        x = self.vit_model(x)
+        return x
 
 class CustomCNN(nn.Module):
     def __init__(self, cfg):
@@ -83,7 +103,7 @@ class MyImprovedCNNModel(nn.Module):
         self.batchnorm5 = nn.BatchNorm1d(256)
         self.dropout5 = nn.Dropout(p=dropout_rate)
 
-        self.fc3 = nn.Linear(256, 10)
+        self.fc3 = nn.Linear(256, 5)
 
     def forward(self, x):
         x = self.pool1(self.dropout1(self.relu1(self.batchnorm1(self.conv1(x)))))
