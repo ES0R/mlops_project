@@ -5,19 +5,9 @@ hyperparameters:
   wd: 0.00001
   batch_size: 32
   epochs: 10
-  optim: "adamw"
+  optim: adamw
 models: 
   base:
-    name: ViT
-    input_channels: 3
-    num_classes: 10
-    features: [32, 64]
-    kernel_sizes: [3, 3]
-    strides: [1, 1]
-    pool: 2
-    fc_features: 512
-    dropout_rate: 0.5
-  cnn:
     name: cnn
     input_channels: 3
     conv_layers:
@@ -35,3 +25,5 @@ models:
       - out_features: 128
     output_classes: 10
     dropout_rate: 0.5
+  vit:
+    name: vit
