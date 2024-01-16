@@ -9,15 +9,13 @@ import hydra
 from tqdm import tqdm
 import wandb
 
-
-
 model_now = "ADV"
-epochs = 4
+epochs = 5
 
 wandb.init(
     # set the wandb project where this run will be logged
     project="MLOps-Project",
-    name="I am the daddy",
+    name="Docker",
     # track hyperparameters and run metadata
     config={
     "learning_rate": 0.001,
