@@ -335,7 +335,7 @@ Yes
 >
 > Answer:
 
---- question 16 fill here ---
+The first and most important step is to read the error printed out in the terminal this tells us a lot, if not all the information we need to solve the bug. If the bug is not obvious from the error message, we then continue with different tools like print statements, feature analysis and chatGPT. This has in all cases so far been enough. If this was not enough, we would go to the debugger and try following the code through the interactive tool. If our code was more complex or we wanted to be better at scaling our code we would probably try and do some profiling on it. 
 
 ## Working in the cloud
 
@@ -491,4 +491,13 @@ Yes
 >
 > Answer:
 
---- question 27 fill here ---
+Student s194127 has worked on the Docker files used for containerization, the checkpoints included in the training script for model saving, dvc integration for data version control and lastly the training script.
+
+Student s185382 has worked with the fastAPI for usage of the model, the buckets where data has been stored, the predictor script for inference and the deployment of the model both locally and in the cloud
+
+Student s194149 has worked on dataloading, dvc data version control, integration of buckets and dvc, hydra for use with config files and the training script
+
+Student s194291 has worked with integration of Wieghts and biases, the chosen unittests for our pipeline and CI in github actions for our repository
+
+Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization and cloud training of the models in gcp
+
