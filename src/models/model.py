@@ -14,7 +14,7 @@ class ViTModel(nn.Module):
         in_features = self.vit_model.head.in_features  # Get the number of input features for the classifier head
         self.vit_model.head = nn.Sequential(
             nn.Linear(in_features, 5),
-            nn.Dropout(0.2)
+            nn.Dropout(0.3)
         )
 
     def forward(self, x):
