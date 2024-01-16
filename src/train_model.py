@@ -23,7 +23,7 @@ class ImageClassifier(pl.LightningModule):
     def __init__(self, cfg):
         super(ImageClassifier, self).__init__()
         self.cfg = cfg
-        self.model = MyImprovedCNNModel()
+        self.model = CustomCNN()
         self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):
@@ -134,7 +134,7 @@ def train(cfg: DictConfig):
     trainer.fit(model, train_loader, val_loader)
 
     # Optionally, save your trained model
-    model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.base.name}.pth')
+    model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
     torch.save(model.state_dict(), model_path)
 
 if __name__ == "__main__":
