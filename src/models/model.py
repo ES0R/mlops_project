@@ -22,50 +22,54 @@ class ViTModel(nn.Module):
         x = self.vit_model(x)
         return x
 
+
 class CustomCNN(nn.Module):
     def __init__(self, cfg):
-        super(CustomCNN, self).__init__()
-        self.cfg = cfg
+        super(MyImprovedCNNModel, self).__init__()
 
-        # Creating Convolutional Layers
+        # Convolutional layers
         self.conv_layers = nn.ModuleList()
         in_channels = cfg.input_channels
-        for conv_cfg in cfg.conv_layers:
-            self.conv_layers.append(nn.Conv2d(in_channels, conv_cfg.out_channels, conv_cfg.kernel_size, stride=conv_cfg.stride, padding=conv_cfg.padding))
-            in_channels = conv_cfg.out_channels
 
-        # Creating Fully Connected Layers
+        for layer_cfg in cfg.conv_layers:
+            self.conv_layers.append(
+                nn.Sequential(
+                    nn.Conv2d(in_channels, layer_cfg.out_channels, kernel_size=layer_cfg.kernel_size, stride=layer_cfg.stride, padding=layer_cfg.padding),
+                    nn.ReLU(),
+                    nn.BatchNorm2d(layer_cfg.out_channels),
+                    nn.MaxPool2d(kernel_size=cfg.pool_size, stride=2),
+                    nn.Dropout2d(p=cfg.dropout_rate)
+                )
+            )
+            in_channels = layer_cfg.out_channels
+
+        # Fully connected layers
         self.fc_layers = nn.ModuleList()
-        in_features = self._calculate_conv_output_size()  # Implement this method based on your input size and architecture
-        for fc_cfg in cfg.fc_layers:
-            self.fc_layers.append(nn.Linear(in_features, fc_cfg.out_features))
-            in_features = fc_cfg.out_features
+        in_features = cfg.fc_layers[0].in_features
 
+        for fc_layer in cfg.fc_layers:
+            self.fc_layers.append(
+                nn.Sequential(
+                    nn.Linear(in_features, fc_layer.out_features),
+                    nn.ReLU(),
+                    nn.BatchNorm1d(fc_layer.out_features),
+                    nn.Dropout(p=cfg.dropout_rate)
+            )
+        )
+        in_features = fc_layer.out_features
         self.output = nn.Linear(in_features, cfg.output_classes)
-        self.dropout = nn.Dropout(cfg.dropout_rate)
 
-    def forward(self, x):
-        # Forward pass through Conv layers with ReLU and pooling
-        for conv_layer in self.conv_layers:
-            x = F.relu(conv_layer(x))
-            x = F.max_pool2d(x, self.cfg.pool_size)
+def forward(self, x):
+    for conv_layer in self.conv_layers:
+        x = conv_layer(x)
 
-        # Flatten
-        x = x.view(x.size(0), -1)
+    x = torch.flatten(x, 1)  # Flatten the output for the fully connected layer
 
-        # Forward pass through FC layers with ReLU and dropout
-        for fc_layer in self.fc_layers:
-            x = F.relu(fc_layer(x))
-            x = self.dropout(x)
+    for fc_layer in self.fc_layers:
+        x = fc_layer(x)
 
-        # Output layer
-        x = self.output(x)
-        return x
-
-    def _calculate_conv_output_size(self):
-        # Dummy pass to calculate output size
-        # Implement this based on your specific architecture and input size
-        pass
+    x = self.output(x)
+    return x
 
 
 class MyImprovedCNNModel(nn.Module):
