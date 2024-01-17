@@ -105,7 +105,7 @@ end of the project.
 >
 > Answer:
 
---- question 1 fill here ---
+Group 12
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -193,7 +193,7 @@ Yes, we employed a method where all code was was written into functions, with ev
 >
 > Answer:
 
---- question 7 fill here ---
+In total we have implemented 6 tests. 3 tests were related to the data part of our code and 3 tests were related to the model construction of our code. We didn't do a lot of testing, however, we believe that the tests we ended up doing were all essential parts. For testing the data part of our code, we included tests that would check if the number of images matched the number of annotations, which is extremely important. We also included tests to check whether the image tensors and annotation tensors were the correct dimensions. For the model we tested the correctness and feasibility of the construction of the models. For this we would check whether the output features of one layer actually corresponded with the input features of the subsequent layer, to ensure that the model construction was consistent and cohesive.
 
 ### Question 8
 
@@ -208,7 +208,7 @@ Yes, we employed a method where all code was was written into functions, with ev
 >
 > Answer:
 
---- question 8 fill here ---
+As stated in the answer for 'Question 7' we only did testing for the data part of our code as well as the model construction. And we only did 6 unittests overall. We did generate a coverage report and it states that only 16% of the code is covered with the testing of the data part our code. And 40% of the code is covered with the testing related to the model construction.  
 
 ### Question 9
 
@@ -254,7 +254,7 @@ Yes
 >
 > Answer:
 
---- question 11 fill here ---
+As previously stated, we divided the unittests into two categories: one pertaining to the data aspect of our code and the other concerning the model construction. Therefore we created two separate .yaml files within the `.github/workflows` directory, which we named "Run Test Dataloading" and "Run Test Model" to correspond to these respective categories. Additionally, we configured these .yaml files to automate the execution of these actions every Monday at 14:00, ensuring that both data retrieval using `dvc` and the associated unittests continue to function smoothly. This setup also serves as a failsafe against unintentional model and data modifications that could potentially break the system.
 
 ## Running code and tracking experiments
 
