@@ -4,7 +4,6 @@ hydra:
 
 defaults:
   - _self_
-  - hyperparameters: hyperparameters_config
   - data: data_config
   - model: model_config
 

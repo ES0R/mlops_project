@@ -4,27 +4,47 @@ import pytorch_lightning as pl
 import timm
 
 class ViTModel(nn.Module):
-    def __init__(self):
+    def __init__(self, cfg, num_classes):
         super(ViTModel, self).__init__()
         
-        # Load a pretrained Vision Transformer model
+       # Load a pretrained Vision Transformer model
         self.vit_model = timm.create_model("vit_base_patch16_224", pretrained=True)
 
-        # Modify the classifier head for your specific task
-        in_features = self.vit_model.head.in_features  # Get the number of input features for the classifier head
-        self.vit_model.head = nn.Sequential(
-            nn.Linear(in_features, 5),
-            nn.Dropout(0.3)
-        )
+        # Adjust the output size of the ViT model to match the input size of the first FC layer
+        in_features = self.vit_model.head.in_features
+        self.vit_model.head = nn.Linear(in_features, 768)  # Assuming the first FC layer expects 768 features
+
+        # fc layers on top of vit
+        self.fc_layers = nn.ModuleList()
+        for fc_layer in cfg.models.vit.fc_layers:
+            self.fc_layers.append(
+                nn.Sequential(
+                    nn.Linear(in_features, fc_layer.out_features),
+                    nn.ReLU(),
+                    nn.BatchNorm1d(fc_layer.out_features),
+                    nn.Dropout(p=fc_layer.dropout)
+                )
+            )
+            in_features = fc_layer.out_features
+
+        self.output = nn.Linear(in_features, num_classes)
 
     def forward(self, x):
         # Forward pass through the ViT model
         x = self.vit_model(x)
+
+        # Pass through additional fully connected layers
+        for fc_layer in self.fc_layers:
+            x = fc_layer(x)
+
+        # Final output layer
+        x = self.output(x)
+
         return x
 
 
 class CustomCNN(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg, num_classes):
         super(CustomCNN, self).__init__()
         # Convolutional layers
         self.conv_layers = nn.ModuleList()
@@ -61,7 +81,7 @@ class CustomCNN(nn.Module):
             )
             in_features = fc_layer.out_features
 
-        self.output = nn.Linear(in_features, cfg.models.cnn.output_classes)
+        self.output = nn.Linear(in_features, num_classes)
 
     def _calculate_conv_output_size(self, cfg):
         image_size = 224  # Example image size (224x224)

@@ -1,4 +1,4 @@
-default_model: cnn
+default_model: vit
 
 hyperparameters:
   lr: 0.001
@@ -34,4 +34,14 @@ models:
       - in_features: 512
         out_features: 256
         dropout: 0.4
-    output_classes: 10
+  vit: 
+    name: vit
+    fc_layers:
+      - in_features: N/A  
+        out_features: 512
+        dropout: 0.4
+      - in_features: 512
+        out_features: 256
+        dropout: 0.4
+
+    

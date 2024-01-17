@@ -20,10 +20,17 @@ warnings.filterwarnings("ignore", message=".*Consider setting `persistent_worker
 warnings.filterwarnings("ignore", message=".*You are using a CUDA device.*")
 
 class ImageClassifier(pl.LightningModule):
-    def __init__(self, cfg):
+    def __init__(self, cfg, num_classes):
         super(ImageClassifier, self).__init__()
         self.cfg = cfg
-        self.model = CustomCNN(cfg)
+
+        if cfg.default_model == 'cnn':
+            self.model = CustomCNN(cfg, num_classes)
+        elif cfg.default_model == 'vit':
+            self.model = ViTModel(cfg, num_classes)
+        else:
+            raise ValueError("Unsupported model type specified in configuration")
+
         self.criterion = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):
@@ -56,13 +63,6 @@ class ImageClassifier(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr = self.cfg.hyperparameters.lr, weight_decay=self.cfg.hyperparameters.wd)
         return optimizer
-    
-    # def configure_logging(self):
-    # wandb_logger = WandbLogger(
-    #     log_model=True,  # Log the best model
-    #     save_dir="wandb_logs",  # Save logs in a specific directory
-    # )
-    # return [wandb_logger]
 
 def get_run_name(cfg):
     model_name = cfg.models.cnn.name
@@ -107,7 +107,8 @@ def train(cfg: DictConfig):
     train_loader, val_loader = load_data(cfg)
 
     # Initialize model
-    model = ImageClassifier(cfg.model)
+    num_classes = len(cfg.data.classes)
+    model = ImageClassifier(cfg.model, num_classes)
 
     # Check points
     checkpoint_callback = ModelCheckpoint(
