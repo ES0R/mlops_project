@@ -208,7 +208,7 @@ In total we have implemented 6 tests. 3 tests were related to the data part of o
 >
 > Answer:
 
-As stated in the answer for 'Question 7' we only did testing for the data part of our code as well as the model construction. And we only did 6 unittests overall. We did generate a coverage report and it states that only 14% of the code is covered with the testing of the data part our code. And 33% of the code is covered with the testing related to the model construction.  
+As stated in the answer for 'Question 7' we only did testing for the data part of our code as well as the model construction. And we only did 6 unittests overall. We did generate a coverage report and it states that only 14% of the code is covered with the testing of the data part our code. And 33% of the code is covered with the testing related to the model construction. Overall according to the coverage report 22% of code is covered. Which means we are far from 100% coverage. If we wanted to get closer to that number, we would have to do more testing regarding the data part, which could include testing regarding the normalisation of the tensors etc.
 
 ### Question 9
 
@@ -382,7 +382,7 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 18 fill here ---
+The integration of the cloud to our project was the latest stage we reached at in our project. And we ended up not having enough time to successfully execute this part. So in the end we didn't actually use the GCP Compute Engine. We do include this in the diagram in Question 25, however, because we did intend to use the compute engine in the end. We just unfortunately ran out of time. Our intentions was to use a e2-medium VM-instance in a region close to us to minimize latency and to use the compute engine resources for faster training.
 
 ### Question 19
 
@@ -440,7 +440,7 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 23 fill here ---
+We did not manage to implement monitoring for our deployed models within this current project timeline. However, we do recognize that monitoring is a crucial aspect of maintaining the robustness and longevity of ML applications. Our hope for the future would be to use Evidently by Evidently AI to monitor for data drifting. By utilizing Evidently, we plan to continuousy track changes in data distributions and model predictions, ensuring that any onset of data drift is quickly identified and addressed. This would help us to maintain the accuracy and reliability of our models, adjusting or retraining them as necessary to adapt to evolving data patterns.
 
 ### Question 24
 
@@ -479,7 +479,7 @@ The first and most important step is to read the error printed out in the termin
 
 The starting point of the diagram is our local PyTorch application, which we wrapped in the PyTorch Lightning framework to reduce boilerplate code. Here we additionally also used the `timm` framework for using the pre-trained models. The diagram also show how the local application is integrated with Hydra for using config files and Weights and Biases for logging and tracking of experiments. A new environment can be initialized using either Conda or `pip`. In our case we opted for `pipreqs` for finding the package requirements.  All of these components are encapsulated within Docker containers to ensure consistency across different development environments. Additional feature of our deployment also allows the user to start a local server and do inference using FastAPI.
 
-On the Cloud side one can see the inclusion of GitHub Actions that helps to automate our workflows for continuous integration. One can also see how we also managed to integrate a GCP Compute Engine in order to train over the cloud. The output models will be stored in a GC Remote Blob Storage where the data is also stored. 
+On the Cloud side one can see the inclusion of GitHub Actions that helps to automate our workflows for continuous integration. One can also see how we also managed to integrate a GCP Compute Engine in order to train over the cloud. The output models will be stored in a GC Remote Blob Storage where the data is also stored. However, as stated in Question 18 we did not successfully implement the inclusion of the GCP Compute Engine, so that part of the diagram is technically not yet deployed and accurate to our current system.
 
 
 ### Question 26
