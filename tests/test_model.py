@@ -11,27 +11,21 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from src.models.model import MyAwesomeModel, MyImprovedCNNModel
+from src.models.model import MyImprovedCNNModel
 import numpy as np
 
-def test_input_MyAwesomeModel():
-    input_features = 3*224*224
-    model = MyAwesomeModel()
-    assert input_features == model.fc1.in_features, "number of input features does not match [3*224*224]"
-
-def test_layers_MyAwesomeModel():
-    model = MyAwesomeModel()
-    assert model.fc1.out_features == model.fc2.in_features, "This model is not made correctly. Output and Input of subsequent layers do not match!"
-    assert model.fc2.out_features == model.fc3.in_features, "This model is not made correctly. Output and Input of subsequent layers do not match!"
-    assert model.fc3.out_features == model.fc4.in_features, "This model is not made correctly. Output and Input of subsequent layers do not match!"
-
-def test_layers_MyImprovedCNNModel():
+def test_layer1():
     model = MyImprovedCNNModel()
     assert model.fc1.out_features == model.fc2.in_features, "This model is not made correctly. Output and Input of subsequent layers do not match!"
+
+def test_layer2():
+    model = MyImprovedCNNModel()
     assert model.fc2.out_features == model.fc3.in_features, "This model is not made correctly. Output and Input of subsequent layers do not match!"
 
-
-
-
+def test_layer3():
+    model = MyImprovedCNNModel()
+    assert model.batchnorm1.num_features == model.conv1.out_channels, "This model is not made correctly. Output and Input of subsequent layers do not match!"
+    assert model.batchnorm2.num_features == model.conv2.out_channels, "This model is not made correctly. Output and Input of subsequent layers do not match!"
+    assert model.batchnorm3.num_features == model.conv3.out_channels, "This model is not made correctly. Output and Input of subsequent layers do not match!"
 
 
