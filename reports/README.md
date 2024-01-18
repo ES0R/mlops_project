@@ -528,11 +528,11 @@ We also had minor issues with the config files as they were difficult to produce
 
 Student s194127 has worked on the Docker files used for containerization, the checkpoints included in the training script for model saving, dvc integration for data version control and lastly the training script.
 
-Student s185382 has worked with the fastAPI for usage of the model, the buckets where data has been stored, the predictor script for inference and the deployment of the model both locally and in the cloud
+Student s185382 has worked with the fastAPI for usage of the model, the buckets where data has been stored, the predictor script for inference and the deployment of the model
 
 Student s194149 has worked on dataloading, dvc data version control, integration of buckets and dvc, hydra for use with config files and the training script
 
 Student s194291 has worked with integration of Weights and Biases, the chosen unittests for our pipeline and CI in github actions for our repository
 
-Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization and cloud training of the models in gcp
+Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization, integration of buckets in training and training of the models
 
