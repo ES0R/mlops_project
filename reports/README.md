@@ -305,7 +305,11 @@ We use the config files to ensure reproducibility with respect to the models the
 >
 > Answer:
 
---- question 14 fill here ---
+![mlops_architecture](figures/wb1.png)
+
+![mlops_architecture](figures/wb2.png)
+
+![mlops_architecture](figures/wb3.png)
 
 ### Question 15
 
