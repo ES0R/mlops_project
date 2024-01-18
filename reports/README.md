@@ -368,7 +368,7 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 17 fill here ---
+We used the Engine and the Bucket. We mostly used the bucket as they were nice for the setup of DVC for data source control and we also could use the buckets to save the finished model weights after training. This helped us make sure we could train non-locally like the cloud VM´s and the HPC. We also used the Engine for training of small prototype models but as we scaled the project we could not train it there any longer. We then made a hard push to finish docker, W&B and other nessesary steps so we could again train it on the cloud but we never made it to the actual training again and this would be the next step in future works.
 
 ### Question 18
 
