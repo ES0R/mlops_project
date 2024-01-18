@@ -2,9 +2,9 @@ name: Run Test Dataloading
 
 on:
   push:
-    branches: [github_actions]
+    branches: [master]
   pull_request:
-    branches: [github_actions]
+    branches: [master]
   schedule:
     - cron: "0 13 * * 1"  # run every Monday at 13:00 UTC
 
