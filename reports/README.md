@@ -193,7 +193,7 @@ Yes, we employed a method where all code was written into functions, with even t
 >
 > Answer:
 
-In total we have implemented 6 tests. 3 tests were related to the data part of our code and 3 tests were related to the model construction of our code. We didn't do a lot of testing, however, we believe that the tests we ended up doing were all essential parts. For testing the data part of our code, we included tests that would check if the number of images matched the number of annotations, which is extremely important. We also included tests to check whether the image tensors and annotation tensors were the correct dimensions. For the model we tested the correctness and feasibility of the construction of the models. For this we would check whether the output features of one layer actually corresponded with the input features of the subsequent layer, to ensure that the model construction was consistent and cohesive.
+In total we implemented 6 tests. 3 tests were related to the data part and 3 tests were related to the model construction of our code. For testing the data part, we included tests that would check if the number of images matched the number of annotations. We also included tests to check whether the image tensors and annotation tensors were the correct dimensions. For the model we tested the correctness of the construction of the models. For this we would check whether the output features of one layer actually corresponded with the input features of the subsequent layer.
 
 ### Question 8
 
@@ -238,7 +238,9 @@ Yes, we made use of branches and pull requests in our project. Individual assign
 >
 > Answer:
 
-Yes, we did employ DVC for data management in our project and it significantly improved our workflow. In our case the data always remained the same, so version control of the data wasn't strictly necessary, however, we found it very useful for storage efficiency and helping save storage space. The combination of DVC with our ML code in Git also ensured great reproducibility. Anyone on the team could easily reproduce and get the data by pulling the data with DVC. 
+Yes, we did employ DVC for data management in our project and it significantly improved our workflow. In our case the data always remained the same, so version control of the data wasn't strictly necessary, however, we found it very useful for storage efficiency and helping save storage space. The combination of DVC with our ML code in Git also ensured great reproducibility. With DVC, anyone on the team could easily reproduce and get the data by pulling the data with DVC. 
+
+Even though we didn't find DVC useful in our case for version control, that doesn't mean that version control of data isn't beneficial. In one were to make changes to the data to improve performance of models then that it would be ideal to version control the data. 
 
 ### Question 11
 
@@ -254,7 +256,7 @@ Yes, we did employ DVC for data management in our project and it significantly i
 >
 > Answer:
 
-As previously stated, we divided the unittests into two categories: one pertaining to the data aspect of our code and the other concerning the model construction. Therefore we created two separate .yaml files within the `.github/workflows` directory, which we named "Run Test Dataloading" and "Run Test Model" to correspond to these respective categories. Additionally, we configured these .yaml files to automate the execution of these actions every Monday at 14:00, ensuring that both data retrieval using DVC and the associated unittests continue to function smoothly. This setup also serves as a failsafe against unintentional model and data modifications that could potentially break the system.
+As previously stated, we divided the unit tests into two categories: one pertaining to the data aspect of our code and the other concerning the model construction. Therefore we created two separate .yaml files within the `.github/workflows` directory, which we named "Run Test Dataloading" and "Run Test Model" to correspond to these respective categories. The "Run Test Dataloading" .yaml file would execute the unit tests related to the data part of the code. However, before it runs these tests, it initiates a process to pull the necessary data using DVC. Because of this, this GitHub Action is the one taking the longest time due to pulling the data to begin with. This workflow takes around 13 minutes. The "Run Test Model" only executes the unittests related the model construction. Therefore it is much faster at around 3 minutes. Additionally, we configured these .yaml files to automate the execution of these actions every Monday at 13:00 UTC, ensuring that both data retrieval using DVC and the associated unit tests continue to function smoothly. The actions get executed everytime one pushes to master. This setup also serves as a failsafe against unintentional model and data modifications that could potentially break the system.
 
 ## Running code and tracking experiments
 
