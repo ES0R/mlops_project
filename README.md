@@ -23,6 +23,9 @@ A list of frameworks the projects aims to include:
 | W&B   | Track and log values for experiments  |
 | Pytorch-lightning   | Reduce boilerplate Code |
 | Pytorch   | Deep learning framework |
+| timm   | Pre-trained models |
+| FastAPI |    |
+
 
 All codes should be run from the root directory of the project, so make sure to path to the desired file from the `mlops_project` folder. 
 
@@ -42,7 +45,8 @@ then:
 
 `make_data.py` is a script for preparing image datasets, supporting both complete and sparse dataset creation.
 - **Complete Dataset**: Processes all images and annotations.
-- **Sparse Dataset**: Choose classes by name or index from `class_mapping.yaml`
+- **Sparse Dataset**: Choose classes to process
+The selection is done through `src/config/data/data_config.yaml` at `classes`. 
 
 ## Trainer
 
@@ -77,11 +81,11 @@ The directory structure of the project looks like this:
 
 ├── Makefile             <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md            <- The top-level README for developers using this project.
+├── app                  <- Application for running the inference model
 ├── config
 │   ├── data             <- Contains config for data loading
-│   ├── hyperparameter   <- Contains config for training hyper parameters
 │   ├── model            <- Contains config for model
-│   └── config.yaml      <- Combines config for data, hyperparameter and model
+│   └── config.yaml      <- Combines config for data and model
 ├── data
 │   ├── processed        <- The final, canonical data sets for modeling.
 │   └── raw              <- The original, immutable data dump.
@@ -92,8 +96,6 @@ The directory structure of the project looks like this:
 │   └── source/          <- Source directory for documentation files
 │
 ├── models               <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks            <- Jupyter notebooks.
 │
 ├── pyproject.toml       <- Project configuration file
 │
@@ -116,11 +118,8 @@ The directory structure of the project looks like this:
 │   │
 │   ├── models           <- model implementations, training script and prediction script
 │   │   ├── __init__.py
-│   │   ├── model.py
+│   │   └── model.py
 │   │
-│   ├── visualization    <- Scripts to create exploratory and results oriented visualizations
-│   │   ├── __init__.py
-│   │   └── visualize.py
 │   ├── train_model.py   <- script for training the model
 │   └── predict_model.py <- script for predicting from a model
 │
