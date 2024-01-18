@@ -100,9 +100,9 @@ def train(cfg: DictConfig):
 
 
     # Set up Wandb Logger
+    time = datetime.now().strftime("%Y%m%d_%H%M%S")
     wandb_config = omegaconf.OmegaConf.to_container(cfg, resolve=True)
-    wandb_logger = WandbLogger(name="Training_Run", project="MLOps-Project", config=wandb_config)
-
+    wandb_logger = WandbLogger(name="TR-"+run_name, project="MLOps-Project", config=wandb_config)
     # Load data
     train_loader, val_loader = load_data(cfg)
 
@@ -137,3 +137,6 @@ def train(cfg: DictConfig):
     # Optionally, save your trained model
     model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
     torch.save(model.state_dict(), model_path)
+
+if __name__ == "__main__":
+    train()

@@ -3,8 +3,8 @@ default_model: vit
 hyperparameters:
   lr: 0.001
   wd: 0.00001
-  batch_size: 32
-  epochs: 10
+  batch_size: 64
+  epochs: 15
   optim: adamw
 models:
   cnn:
