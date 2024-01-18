@@ -273,7 +273,22 @@ As previously stated, we divided the unittests into two categories: one pertaini
 >
 > Answer:
 
---- question 12 fill here ---
+Yes, we have made use of config files in order to give room to experiment with model architectures, hyperparameters as well as which classes to include. We wanted to make this user friendly so that one could iterate over models quickly and easily without encountering errors. An example of where this is relevant can be seen in the `train_model.py` code where the following lines occur:
+
+def __init__(self, cfg, num_classes):
+        super(ImageClassifier, self).__init__()
+        self.cfg = cfg
+
+        if cfg.default_model == 'cnn':
+            self.model = CustomCNN(cfg, num_classes)
+        elif cfg.default_model == 'vit':
+            self.model = ViTModel(cfg, num_classes)
+        else:
+            raise ValueError("Unsupported model type specified in configuration")
+
+        self.criterion = torch.nn.CrossEntropyLoss()
+
+Here it can be seen that the function determines whether the default_model parameter in the config file is `cnn` or `vit` and afterwards will initialize the appropriate model for further use in the code.
 
 ### Question 13
 
