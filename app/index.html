@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload for Inference</title>
+    <style>
+        #results {
+          font-family: 'Courier New', monospace; /* Fixed-width font */
+        }
+        table {
+          width: 50%;
+          border-collapse: collapse;
+        }
+        td, th {
+          text-align: left;
+          padding: 8px;
+        }
+      </style>
+    <script>
+        async function uploadImage() {
+            const formData = new FormData(document.getElementById('uploadForm'));
+            const response = await fetch('http://127.0.0.1:8000/infer', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            displayResults(result);
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let innerHTML = '<h2>Prediction Results</h2>';
+            innerHTML += '<table><tr><th>Label</th><th>Probability</th></tr>';
+            data.labels.forEach((label, index) => {
+            const probability = data.probabilities[index].toFixed(3); // Format to 3 decimal places
+            innerHTML += `<tr><td>${label}</td><td>${probability}</td></tr>`;
+            });
+            innerHTML += '</table>';
+            resultsDiv.innerHTML = innerHTML;
+        }
+    </script>
+</head>
+<body>
+    <h1>Upload Image for Inference</h1>
+    <form id="uploadForm" onsubmit="event.preventDefault(); uploadImage();">
+        <input type="file" name="file" accept="image/*">
+        <input type="submit" value="Upload">
+    </form>
+    <div id="results"></div>
+</body>
+</html>
