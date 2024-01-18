@@ -3,8 +3,8 @@ default_model: cnn
 hyperparameters:
   lr: 0.001
   wd: 0.00001
-  batch_size: 32
-  epochs: 3
+  batch_size: 16
+  epochs: 5
   optim: adamw
 models:
   cnn:
