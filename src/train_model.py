@@ -1,183 +1,139 @@
 import torch
-from torch import nn
+import pytorch_lightning as pl
 from torch.utils.data import TensorDataset, DataLoader
-from models.model import MyAwesomeModel
-from models.model import MyCNNModel, UNet, MyImprovedCNNModel   # Assuming you save the CNN model in cnn_model.py
-import matplotlib.pyplot as plt
-import argparse
+from pytorch_lightning.loggers import WandbLogger
+import os
+os.environ['HYDRA_FULL_ERROR'] = '1'
 import hydra
-from tqdm import tqdm
-import wandb
-
-model_now = "ADV"
-epochs = 5
-
-wandb.init(
-    # set the wandb project where this run will be logged
-    project="MLOps-Project",
-    name="Docker",
-    # track hyperparameters and run metadata
-    config={
-    "learning_rate": 0.001,
-    "architecture": model_now,
-    "dataset": "Dogs",
-    "epochs": epochs,
-    }
-)
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Load your data using the mnist function from data.py
-train_images_tensor = torch.load("data/processed/train_images_tensor.pt")
-train_target_tensor = torch.load("data/processed/train_target_tensor.pt")
-
-# Ensure that the data tensors have the same length
-assert len(train_images_tensor) == len(train_target_tensor), "Mismatch in data length"
-
-print(train_images_tensor.size())
-print(train_target_tensor.size())
-
-# Choose the model based on the command-line argument
-if model_now == 'FCNN':
-    model = MyAwesomeModel().to(device)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-elif model_now == 'CNN':
-    model = MyCNNModel().to(device)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-elif model_now == 'UNet':
-    model = UNet().to(device)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-elif model_now == 'ADV':
-    model = MyImprovedCNNModel().to(device)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=0.003)
-else:
-    raise ValueError('Invalid model choice.')
+from omegaconf import DictConfig
+from models.model import CustomCNN, MyImprovedCNNModel,ViTModel  # Adjust path according to your project structure
+from lightning.pytorch import Trainer, seed_everything
+from pytorch_lightning.callbacks import ModelCheckpoint
+import warnings
+import datetime
+import omegaconf
 
 
-# Hyperparameters
-batch_size = 64
+# Suppress specific warning messages
+warnings.filterwarnings("ignore", category=UserWarning, module="all")
+warnings.filterwarnings("ignore", message=".*Consider setting `persistent_workers=True`.*")
+warnings.filterwarnings("ignore", message=".*You are using a CUDA device.*")
 
-# Create a DataLoader for the entire dataset
-full_dataset = TensorDataset(train_images_tensor, train_target_tensor)
-full_loader = DataLoader(full_dataset, batch_size=len(full_dataset), shuffle=True)
+class ImageClassifier(pl.LightningModule):
+    def __init__(self, cfg, num_classes):
+        super(ImageClassifier, self).__init__()
+        self.cfg = cfg
 
-# Split the shuffled dataset into training and validation sets
-train_size = int(0.8 * len(full_dataset))
-val_size = len(full_dataset) - train_size
-train_dataset, val_dataset = torch.utils.data.random_split(full_dataset, [train_size, val_size])
+        if cfg.default_model == 'cnn':
+            self.model = CustomCNN(cfg, num_classes)
+        elif cfg.default_model == 'vit':
+            self.model = ViTModel(cfg, num_classes)
+        else:
+            raise ValueError("Unsupported model type specified in configuration")
 
-# Create a DataLoader for training data
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        self.criterion = torch.nn.CrossEntropyLoss()
 
-# Create a DataLoader for validation data
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    def forward(self, x):
+        return self.model(x)
 
+    def training_step(self, batch, batch_idx):
+            images, targets = batch
+            outputs = self(images)
+            loss = self.criterion(outputs, targets)
+            acc = self.calculate_accuracy(outputs, targets)  # Implement this method
+            self.log('train_loss', loss)
+            self.log('train_acc', acc, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+            return loss
 
+    def validation_step(self, batch, batch_idx):
+        images, targets = batch
+        outputs = self(images)
+        loss = self.criterion(outputs, targets)
+        acc = self.calculate_accuracy(outputs, targets)  # Implement this method
+        self.log('val_loss', loss)
+        self.log('val_acc', acc, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
 
-print("Training begins")
+    def calculate_accuracy(self, outputs, targets):
+        # Calculate accuracy
+        _, predicted = torch.max(outputs, 1)
+        correct = (predicted == targets).sum().item()
+        return correct / targets.size(0)
 
-# Lists to store values for plotting
-train_losses = []
-val_losses = []
-train_accuracies = []
-val_accuracies = []
+    def configure_optimizers(self):
+        optimizer = torch.optim.AdamW(self.parameters(), lr = self.cfg.hyperparameters.lr, weight_decay=self.cfg.hyperparameters.wd)
+        return optimizer
 
+def get_run_name(cfg):
+    model_name = cfg.models.cnn.name
+    current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    return f"{model_name}_{current_time}"
 
-# Training loop
-for epoch in range(epochs):
-    model.train()
-    total_loss = 0.0
-    correct_train = 0
-    total_train = 0
+def load_data(cfg):
+    train_images_tensor = torch.load(cfg.data.image_data)
+    train_target_tensor = torch.load(cfg.data.target_data)
+    assert len(train_images_tensor) == len(train_target_tensor), "Mismatch in data length"
 
-    # Use tqdm for the training loop
-    for batch_images, batch_targets in tqdm(train_loader, desc=f'Training - Epoch [{epoch + 1}/{epochs}]'):
-        batch_images = batch_images.to(device)
-        batch_targets = batch_targets.to(device)
-        outputs = model(batch_images)
+    full_dataset = TensorDataset(train_images_tensor, train_target_tensor)
+    train_size = int(cfg.data.train_val_split[0] * len(full_dataset))
+    val_size = len(full_dataset) - train_size
+    train_dataset, val_dataset = torch.utils.data.random_split(full_dataset, [train_size, val_size])
 
-        loss = criterion(outputs, batch_targets)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        total_loss += loss.item()
-
-        _, predicted_train = torch.max(outputs.data, 1)
-        total_train += batch_targets.size(0)
-        correct_train += (predicted_train == batch_targets).sum().item()
-
-    average_loss = total_loss / len(train_loader)
-    accuracy_train = correct_train / total_train
-    print(f'Training - Epoch [{epoch + 1}/{epochs}], Loss: {average_loss:.4f}, Accuracy: {accuracy_train:.4f}')
-    
-    # Validation
-    model.eval()
-    correct_val = 0
-    total_val = 0
-    val_loss = 0.0
-
-    # Use tqdm for the validation loop
-    for batch_images_val, batch_targets_val in tqdm(val_loader, desc=f'Validation - Epoch [{epoch + 1}/{epochs}]'):
-        batch_images_val = batch_images_val.to(device)
-        batch_targets_val = batch_targets_val.to(device)
-
-        outputs_val = model(batch_images_val)
-        loss_val = criterion(outputs_val, batch_targets_val)
-        val_loss += loss_val.item()
-
-        _, predicted_val = torch.max(outputs_val.data, 1)
-        total_val += batch_targets_val.size(0)
-        correct_val += (predicted_val == batch_targets_val).sum().item()
-
-    average_val_loss = val_loss / len(val_loader)
-    accuracy_val = correct_val / total_val
-    print(f'Validation - Epoch [{epoch + 1}/{epochs}], Loss: {average_val_loss:.4f}, Accuracy: {accuracy_val:.4f}')
-    wandb.log({"Training Loss": average_loss, "Training Accuracy": accuracy_train, "Validation Loss": average_val_loss, "Validation Accuracy": accuracy_val})
-
-    # Save values for plotting
-    train_losses.append(average_loss)
-    val_losses.append(average_val_loss)
-    train_accuracies.append(accuracy_train)
-    val_accuracies.append(accuracy_val)
-
-# Plotting
-epochs_range = range(1, epochs + 1)
-
-plt.figure(figsize=(12, 4))
-
-# Plotting training and validation loss
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, train_losses, label='Training Loss')
-plt.plot(epochs_range, val_losses, label='Validation Loss')
-plt.scatter(epochs_range, train_losses, label='Training Loss')
-plt.scatter(epochs_range, val_losses, label='Validation Loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-plt.grid()
-plt.title('Training and Validation Loss')
-
-# Plotting training and validation accuracy
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, train_accuracies, label='Training Accuracy')
-plt.plot(epochs_range, val_accuracies, label='Validation Accuracy')
-plt.scatter(epochs_range, train_accuracies, label='Training Accuracy')
-plt.scatter(epochs_range, val_accuracies, label='Validation Accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-plt.title('Training and Validation Accuracy')
-plt.grid()
-plt.tight_layout()
-plt.show()
-
-wandb.finish()
+    train_loader = DataLoader(train_dataset, batch_size=cfg.model.hyperparameters.batch_size, shuffle=True, num_workers=cfg.data.num_workers, persistent_workers=True)
+    val_loader = DataLoader(val_dataset, batch_size=cfg.model.hyperparameters.batch_size, shuffle=False, num_workers=cfg.data.num_workers, persistent_workers=True)
+    return train_loader, val_loader
 
 
-# Optionally, save your trained model
-torch.save(model.state_dict(), 'models/trained_model_'+model_now+'_.pth')
+
+
+@hydra.main(version_base=None, config_path="config", config_name="config")
+def train(cfg: DictConfig):
+    seed_everything(42, workers=True)
+
+    torch.set_float32_matmul_precision('high')  # or 'medium', depending
+
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.benchmark = False
+
+    # Run name
+    run_name = get_run_name(cfg.model)
+
+
+    # Set up Wandb Logger
+    wandb_config = omegaconf.OmegaConf.to_container(cfg, resolve=True)
+    wandb_logger = WandbLogger(name="Training_Run", project="MLOps-Project", config=wandb_config)
+
+    # Load data
+    train_loader, val_loader = load_data(cfg)
+
+    # Initialize model
+    num_classes = len(cfg.data.classes)
+    model = ImageClassifier(cfg.model, num_classes)
+
+    # Check points
+    checkpoint_callback = ModelCheckpoint(
+    dirpath=os.path.join(hydra.utils.get_original_cwd(), f"checkpoints/{run_name}/"),
+    monitor='val_acc',
+    mode='max',
+    save_top_k=1,
+    filename='{epoch}-{val_acc:.2f}'
+    )
+
+    #Set up PyTorch Lightning trainer
+    trainer = pl.Trainer(
+        logger=wandb_logger, 
+        max_epochs=cfg.model.hyperparameters.epochs,
+        deterministic=True,
+        accelerator="auto",  
+        callbacks=[checkpoint_callback],
+        enable_checkpointing=True, #TODO ---------------------------------  
+        enable_progress_bar=True,  
+        log_every_n_steps=10  
+    )
+
+    # Train the model
+    trainer.fit(model, train_loader, val_loader)
+
+    # Optionally, save your trained model
+    model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
+    torch.save(model.state_dict(), model_path)

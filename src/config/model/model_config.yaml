@@ -1,0 +1,47 @@
+default_model: vit
+
+hyperparameters:
+  lr: 0.001
+  wd: 0.00001
+  batch_size: 32
+  epochs: 10
+  optim: adamw
+models:
+  cnn:
+    name: cnn
+    input_channels: 3
+    conv_layers:
+      - out_channels: 32
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        dropout: 0.3
+      - out_channels: 64
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        dropout: 0.3
+      - out_channels: 128
+        kernel_size: 3
+        stride: 1
+        padding: 1
+        dropout: 0.3
+    pool_size: 2
+    fc_layers:
+      - in_features: N/A  
+        out_features: 512
+        dropout: 0.4
+      - in_features: 512
+        out_features: 256
+        dropout: 0.4
+  vit: 
+    name: vit
+    fc_layers:
+      - in_features: N/A  
+        out_features: 512
+        dropout: 0.4
+      - in_features: 512
+        out_features: 256
+        dropout: 0.4
+
+    

@@ -5,19 +5,12 @@ import torch
 from torchvision import transforms
 import xml.etree.ElementTree as ET
 from sklearn.preprocessing import LabelEncoder
-import argparse
 import yaml
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='Image processing script.')
-    parser.add_argument('--dataset', choices=['complete', 'sparse'], default='complete',
-                        help='Type of dataset to process (complete or sparse)')
-    parser.add_argument('--classes', nargs='*', help='List of class names or indices for the sparse dataset')
-    return parser.parse_args()
 
-def read_class_mapping(file_path):
+def read_yaml(file_path):
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)
 
@@ -112,7 +105,6 @@ def process_folder(folder_path, selected_classes=None):
     return res
 
 
-
 def normalize_tensor(tensor):
     mean_value = tensor.mean()
     std_value = tensor.std()
@@ -120,20 +112,9 @@ def normalize_tensor(tensor):
 
 def main():
     try:
-        args = parse_arguments()
-        class_mapping = read_class_mapping('data/class_mapping.yaml')
-
-        selected_classes = None
-        if args.dataset == 'sparse':
-            if args.classes:
-                selected_classes = set()
-                for cls in args.classes:
-                    if cls.isdigit() and int(cls) in class_mapping:
-                        selected_classes.add(class_mapping[int(cls)])
-                    elif cls in class_mapping.values():
-                        selected_classes.add(cls)
-            else:
-                raise ValueError("Sparse dataset selected but no classes specified.")
+        config = read_yaml('src/config/data/data_config.yaml')
+        class_mapping = read_yaml('data/class_mapping.yaml')
+        selected_classes = {class_mapping[int(cls)] for cls in config.get('classes', [])}
 
         root_folder = "data/raw/images/Images"
         folder_path = "data/raw/annotations/Annotation"
