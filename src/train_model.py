@@ -12,6 +12,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 import warnings
 import datetime
 import omegaconf
+from google.cloud import storage
 
 
 # Suppress specific warning messages
@@ -83,6 +84,13 @@ def load_data(cfg):
     val_loader = DataLoader(val_dataset, batch_size=cfg.model.hyperparameters.batch_size, shuffle=False, num_workers=cfg.data.num_workers, persistent_workers=True)
     return train_loader, val_loader
 
+def upload_to_gcs(local_path, gcs_path):
+    client = storage.Client()
+    bucket_name = "mlops-doggy"
+    bucket = client.bucket(bucket_name)
+
+    blob = bucket.blob(gcs_path)
+    blob.upload_from_filename(local_path)
 
 
 
@@ -137,5 +145,12 @@ def train(cfg: DictConfig):
     model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/{run_name}.pth')
     torch.save(model.state_dict(), model_path)
 
+    # After training, save the model to GCS
+    model_local_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
+    model_gcs_path = f'models/trained_model_{cfg.model.models.cnn.name}.pth'
+    
+    upload_to_gcs(model_local_path, model_gcs_path)
+
 if __name__ == "__main__":
     train()
+
