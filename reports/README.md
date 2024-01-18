@@ -418,7 +418,9 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 22 fill here ---
+We managed to deploy the model locally using a local API and prepared these for training, predicting and so on in the cloud. However, we encountered credential issues which we were unable to solve in time and prevented the docker images/containers from uploading and dowloading results from our gcp bucket. We also encountered numerous issues with making `hydra` work together with the API environment, as this differed in a complex manner in comparison to the local repository. 
+
+In conclusion, the model could be deployed locally both directly by running the code and by running docker images, but not with an API. 
 
 ### Question 23
 
