@@ -129,13 +129,17 @@ def predict(cfg: DictConfig):
     model_local_path = 'models/model-trained-temp.pth'
 
     list_bucket_items(model_local_path)
-    
-    model.load_state_dict(torch.load(model_local_path))
-    model.eval()
 
     # Define the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
+   
+
+    model.load_state_dict(torch.load(model_local_path, map_location=torch.device(device)))
+    model.eval()
     model.to(device)
+    
+    
 
     # Transform function for new images
     transform = transforms.Compose([
