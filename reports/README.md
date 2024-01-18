@@ -50,37 +50,37 @@ end of the project.
 
 ### Week 1
 
-* [ ] Create a git repository
-* [ ] Make sure that all team members have write access to the github repository
-* [ ] Create a dedicated environment for you project to keep track of your packages
-* [ ] Create the initial file structure using cookiecutter
-* [ ] Fill out the `make_dataset.py` file such that it downloads whatever data you need and
-* [ ] Add a model file and a training script and get that running
-* [ ] Remember to fill out the `requirements.txt` file with whatever dependencies that you are using
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project
-* [ ] Do a bit of code typing and remember to document essential parts of your code
-* [ ] Setup version control for your data or part of your data
-* [ ] Construct one or multiple docker files for your code
-* [ ] Build the docker files locally and make sure they work as intended
-* [ ] Write one or multiple configurations files for your experiments
-* [ ] Used Hydra to load the configurations and manage your hyperparameters
+* [x] Create a git repository
+* [x] Make sure that all team members have write access to the github repository
+* [x] Create a dedicated environment for you project to keep track of your packages
+* [x] Create the initial file structure using cookiecutter
+* [x] Fill out the `make_dataset.py` file such that it downloads whatever data you need and
+* [x] Add a model file and a training script and get that running
+* [x] Remember to fill out the `requirements.txt` file with whatever dependencies that you are using
+* [x] Remember to comply with good coding practices (`pep8`) while doing the project
+* [x] Do a bit of code typing and remember to document essential parts of your code
+* [x] Setup version control for your data or part of your data
+* [x] Construct one or multiple docker files for your code
+* [x] Build the docker files locally and make sure they work as intended
+* [x] Write one or multiple configurations files for your experiments
+* [x] Used Hydra to load the configurations and manage your hyperparameters
 * [ ] When you have something that works somewhat, remember at some point to to some profiling and see if
       you can optimize your code
-* [ ] Use Weights & Biases to log training progress and other important metrics/artifacts in your code. Additionally,
+* [x] Use Weights & Biases to log training progress and other important metrics/artifacts in your code. Additionally,
       consider running a hyperparameter optimization sweep.
-* [ ] Use Pytorch-lightning (if applicable) to reduce the amount of boilerplate in your code
+* [x] Use Pytorch-lightning (if applicable) to reduce the amount of boilerplate in your code
 
 ### Week 2
 
-* [ ] Write unit tests related to the data part of your code
-* [ ] Write unit tests related to model construction and or model training
-* [ ] Calculate the coverage.
-* [ ] Get some continuous integration running on the github repository
-* [ ] Create a data storage in GCP Bucket for you data and preferable link this with your data version control setup
+* [x] Write unit tests related to the data part of your code
+* [x] Write unit tests related to model construction and or model training
+* [x] Calculate the coverage.
+* [x] Get some continuous integration running on the github repository
+* [x] Create a data storage in GCP Bucket for you data and preferable link this with your data version control setup
 * [ ] Create a trigger workflow for automatically building your docker images
 * [ ] Get your model training in GCP using either the Engine or Vertex AI
-* [ ] Create a FastAPI application that can do inference using your model
-* [ ] If applicable, consider deploying the model locally using torchserve
+* [x] Create a FastAPI application that can do inference using your model
+* [x] If applicable, consider deploying the model locally using torchserve
 * [ ] Deploy your model in GCP using either Functions or Run as the backend
 
 ### Week 3
@@ -94,9 +94,9 @@ end of the project.
 
 ### Additional
 
-* [ ] Revisit your initial project description. Did the project turn out as you wanted?
-* [ ] Make sure all group members have a understanding about all parts of the project
-* [ ] Uploaded all your code to github
+* [x] Revisit your initial project description. Did the project turn out as you wanted?
+* [x] Make sure all group members have a understanding about all parts of the project
+* [x] Uploaded all your code to github
 
 ## Group information
 
@@ -394,7 +394,7 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 19 fill here ---
+![mlops_architecture](figures/gc1.PNG)
 
 ### Question 20
 
@@ -403,7 +403,9 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 20 fill here ---
+As mentioned in earlier questions we have not deployed any model or training in the cloud so these images are empty
+
+![mlops_architecture](figures/gc2.PNG)
 
 ### Question 21
 
@@ -412,7 +414,9 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 21 fill here ---
+As mentioned in earlier questions we have not deployed any model or training in the cloud so these images are empty
+
+![mlops_architecture](figures/gc3.PNG)
 
 ### Question 22
 
@@ -459,7 +463,10 @@ We did not manage to implement monitoring for our deployed models within this cu
 >
 > Answer:
 
---- question 24 fill here ---
+Two of our group members used all 50 credits in a single day due to forgetting to stop a particularly expensive instance. Besides this expensive venture, our group has used approximately 10 credits during development of our service. The main cost expenses came from:
+
+> Buckets
+> Compute Engine (training of early models)
 
 ## Overall discussion of project
 
@@ -523,11 +530,11 @@ We also had minor issues with the config files as they were difficult to produce
 
 Student s194127 has worked on the Docker files used for containerization, the checkpoints included in the training script for model saving, dvc integration for data version control and lastly the training script.
 
-Student s185382 has worked with the fastAPI for usage of the model, the buckets where data has been stored, the predictor script for inference and the deployment of the model both locally and in the cloud
+Student s185382 has worked with the fastAPI for usage of the model, the buckets where data has been stored, the predictor script for inference and the deployment of the model
 
 Student s194149 has worked on dataloading, dvc data version control, integration of buckets and dvc, hydra for use with config files and the training script
 
 Student s194291 has worked with integration of Weights and Biases, the chosen unittests for our pipeline and CI in github actions for our repository
 
-Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization and cloud training of the models in gcp
+Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization, integration of buckets in training and training of the models
 
