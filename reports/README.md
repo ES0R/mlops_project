@@ -460,7 +460,12 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 25 fill here ---
+![mlops_architecture](figures/mlops_architecture.drawio.png)
+
+The starting point of the diagram is our local PyTorch application, which we wrapped in the PyTorch Lightning framework to reduce boilerplate code. Here we additionally also used the `timm` framework for using the pre-trained models. The diagram also show how the local application is integrated with Hydra for using config files and Weights and Biases for logging and tracking of experiments. A new environment can be initialized using either Conda or `pip`. In our case we opted for `pipreqs` for finding the package requirements.  All of these components are encapsulated within Docker containers to ensure consistency across different development environments. Additional feature of our deployment also allows the user to start a local server and do inference using FastAPI.
+
+On the Cloud side one can see the inclusion of GitHub Actions that helps to automate our workflows for continuous integration. One can also see how we also managed to integrate a GCP Compute Engine in order to train over the cloud. The output models will be stored in a GC Remote Blob Storage where the data is also stored. 
+
 
 ### Question 26
 
@@ -474,7 +479,7 @@ The first and most important step is to read the error printed out in the termin
 >
 > Answer:
 
---- question 26 fill here ---
+One of our primary struggles of the project was the incorporation of Hydra within our system. We used Hydra for managing multiple configurations for various experiments, and ensuring reproducibility. However, we found it somewhat cumbersome when it came to integrating with various components of our code including the inference with FastAPI and the unittesting. 
 
 ### Question 27
 
