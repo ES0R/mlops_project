@@ -401,7 +401,9 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 20 fill here ---
+As mentioned in earlier questions we have not deployed any model or training in the cloud so these images are empty
+
+![mlops_architecture](figures/gc2.PNG)
 
 ### Question 21
 
@@ -410,7 +412,9 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 21 fill here ---
+As mentioned in earlier questions we have not deployed any model or training in the cloud so these images are empty
+
+![mlops_architecture](figures/gc3.PNG)
 
 ### Question 22
 
