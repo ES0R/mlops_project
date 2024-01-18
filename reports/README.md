@@ -494,7 +494,7 @@ On the Cloud side one can see the inclusion of GitHub Actions that helps to auto
 >
 > Answer:
 
---- question 26 fill here ---
+One of our primary struggles of the project was the incorporation of Hydra within our system. We used Hydra for managing multiple configurations for various experiments, and ensuring reproducibility. However, we found it somewhat cumbersome when it came to integrating with various components of our code including the inference with FastAPI and the unittesting. 
 
 ### Question 27
 
