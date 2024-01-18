@@ -14,4 +14,4 @@ WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir
 RUN pip install . --no-deps --no-cache-dir
 
-ENTRYPOINT ["python", "-u", "src/data/make_data.py"]
+ENTRYPOINT ["python", "-u", "src/data/make_dataset.py"]

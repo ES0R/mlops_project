@@ -14,6 +14,7 @@ from src.models.model import CustomCNN, MyImprovedCNNModel,ViTModel  # Adjust pa
 import pytorch_lightning as pl
 from google.cloud import storage
 import yaml
+from omegaconf import OmegaConf
 HYDRA_FULL_ERROR=1
 
 
@@ -76,10 +77,42 @@ def preprocess_image(image: Image.Image, device, transform):
     return transform(image).to(device)
 
 # Function to predict image
-def predict_image(image: Image.Image, model, device, label_encoder, transform):
+def predict_image(image: Image.Image):
     """
     Run model prediction on the preprocessed image and return top 5 labels and probabilities.
     """
+    config = read_yaml('src/config/data/data_config.yaml')
+    class_mapping = read_yaml('data/class_mapping.yaml')
+    selected_classes = {class_mapping[int(cls)] for cls in config.get('classes', [])}
+        
+    model_config = read_yaml('src/config/model/model_config.yaml')
+
+    # Load the saved model
+    config_model = OmegaConf.create(model_config)
+    model = ImageClassifier(config_model, len(selected_classes))
+     
+    model_local_path = 'models/model-trained-temp.pth'
+
+    list_bucket_items(model_local_path)
+
+    # Define the device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+   
+    model.load_state_dict(torch.load(model_local_path, map_location=torch.device(device)))
+    model.eval()
+    model.to(device)
+    
+    
+    # Transform function for new images
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+    ])
+
+    # Load the label encoder
+    label_encoder = torch.load('data/processed/label_encoder.pt')
+    
+    
     model.eval()
     processed_image = preprocess_image(image, device, transform)
     with torch.no_grad():
@@ -87,7 +120,7 @@ def predict_image(image: Image.Image, model, device, label_encoder, transform):
         probabilities = torch.nn.functional.softmax(output[0], dim=0)
         top5_probabilities, top5_classes = torch.topk(probabilities, 3)
         
-        print("Known classes in label encoder:", label_encoder.classes_, top5_classes)#-torch.tensor([1,1,1,1,1]))
+        print("Known classes in label encoder:", label_encoder.classes_, top5_classes)
         # Get the predicted class labels from the label encoder
         predicted_labels = label_encoder.inverse_transform(top5_classes.cpu().numpy())
     
@@ -114,42 +147,8 @@ def select_random_images(base_path, num_images=2):
     return selected_images
 
 # Main prediction function using Hydra
-@hydra.main(version_base=None, config_path="config", config_name="config")
-def predict(cfg: DictConfig):
+def predict():
     # Load the configuration
-
-
-    config = read_yaml('src/config/data/data_config.yaml')
-    class_mapping = read_yaml('data/class_mapping.yaml')
-    selected_classes = {class_mapping[int(cls)] for cls in config.get('classes', [])}
-        
-    # Load the saved model
-    model = ImageClassifier(cfg.model, len(selected_classes))
-     
-    model_local_path = 'models/model-trained-temp.pth'
-
-    list_bucket_items(model_local_path)
-
-    # Define the device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(device)
-   
-
-    model.load_state_dict(torch.load(model_local_path, map_location=torch.device(device)))
-    model.eval()
-    model.to(device)
-    
-    
-
-    # Transform function for new images
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-    ])
-
-    # Load the label encoder
-    label_encoder = torch.load('data/processed/label_encoder.pt')
-    print(label_encoder.classes_)
     
     # Load and preprocess new images
     base_path = 'data/raw/images/Images'
@@ -158,7 +157,7 @@ def predict(cfg: DictConfig):
 
     # Run inference on new images
     for i, image in enumerate(new_images):
-        predicted_labels, top5_probabilities = predict_image(image, model, device, label_encoder, transform)
+        predicted_labels, top5_probabilities = predict_image(image)
         plt.imshow(image)
         plt.title(f"Prediction for image {i + 1}: Top 5 Classes and Probabilities")
         plt.axis('off')
