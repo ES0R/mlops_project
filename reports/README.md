@@ -320,7 +320,11 @@ We use the config files to ensure reproducibility with respect to the models the
 >
 > Answer:
 
---- question 15 fill here ---
+We used docker primarily to enable using the different scripts in the cloud. This could greatly simplify the process as we could create images for data loading, training and deployment where we could "simply" upload the docker image to the cloud. We could also use this function locally to ensure that the code would be able to run on any of our computers and thereby reduce potential bugfixing issues. During development we encountered memory issues whilst deploying our images locally so a command to run the trainer became:
+
+`docker run --shm-size=1g --name <experiment_name> -e WANDB_API_KEY=<insert_API_KEY> trainer:latest`
+
+Where `--sshm-size=1g` increased the share of memory given to the VM enabling the run. Additionally some issues were encountered concerning the API key however these were solved as well. 
 
 ### Question 16
 
