@@ -489,7 +489,12 @@ On the Cloud side one can see the inclusion of GitHub Actions that helps to auto
 >
 > Answer:
 
-One of our primary struggles of the project was the incorporation of Hydra within our system. We used Hydra for managing multiple configurations for various experiments, and ensuring reproducibility. However, we found it somewhat cumbersome when it came to integrating with various components of our code including the inference with FastAPI and the unittesting. 
+One of our primary struggles with the project was the incorporation of Hydra within our system. We used Hydra for managing multiple configurations for various experiments and ensuring reproducibility. However, we found it cumbersome when it came to integrating with various components of our code including the inference with FastAPI and the unittesting which took up a large amount of time from our team. Especially the “combining” of our use of hydra and FastAPI presented us with unexpected problems leading to reconsiderations of the entire code methodology. 
+
+Additionally, we encountered issues with github actions where testing on the data required a large amount of memory which could potentially crash github actions if too many photos of dogs were included. This was solved simply by only using a subset of the data for the entirety of the project, which was deemed acceptable as this also increased training times and so forth enabling faster bugfixing. 
+
+We also had minor issues with the config files as they were difficult to produce due to the complexity of our models and the adaptability we wished to achieve for our application. Keeping track of all these parameters and making sure the “post spaghetti-code” version only used said parameters from the config files gave us something to think about. Also deciding which parameters were to remain constant always, and which parameters we wanted to make accessible was not necessarily straight forward. 
+
 
 ### Question 27
 
