@@ -54,6 +54,21 @@ To change the trained model go to `model_config.yaml` and specify your desired a
 
 `predict_model.py` is a script from which you can pass any image, and predict class of dog in the picture. You can choose a specific model by inserting the file name in `model_config.yaml` under the parameter `WhatEverThisParameterIsNamed!!`. 
 
+
+## Docker
+
+To build the docker image use the following command:
+
+`docker build -f dockerfiles/train_model.dockerfile . -t trainer:latest`
+
+In order to run the trainer on a docker image it is recommended to use the following command:
+
+`docker run --shm-size=1g --name <experiment_name> -e WANDB_API_KEY=<insert_API_KEY> trainer:latest`
+
+Remember to replace `<experiment_name>` with the desired name for the run and `<insert_API_KEY>` with your WANDB API key.
+
+
+
 ## Project structure
 
 The directory structure of the project looks like this:
