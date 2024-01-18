@@ -1,0 +1,12 @@
+hydra:
+  job:
+    chdir: false
+
+defaults:
+  - _self_
+  - data: data_config
+  - model: model_config
+
+disable_warnings:
+  - "OCCURRENCE_WARNING"
+  - "CONFIG_WARNING"
