@@ -14,6 +14,7 @@ from src.models.model import CustomCNN, MyImprovedCNNModel,ViTModel  # Adjust pa
 import pytorch_lightning as pl
 from google.cloud import storage
 import yaml
+from omegaconf import OmegaConf
 HYDRA_FULL_ERROR=1
 
 
@@ -87,7 +88,8 @@ def predict_image(image: Image.Image):
     model_config = read_yaml('src/config/model/model_config.yaml')
 
     # Load the saved model
-    model = ImageClassifier(model_config, len(selected_classes))
+    config_model = OmegaConf.create(model_config)
+    model = ImageClassifier(config_model, len(selected_classes))
      
     model_local_path = 'models/model-trained-temp.pth'
 
@@ -145,7 +147,7 @@ def select_random_images(base_path, num_images=2):
     return selected_images
 
 # Main prediction function using Hydra
-def predict(cfg: DictConfig):
+def predict():
     # Load the configuration
     
     # Load and preprocess new images
