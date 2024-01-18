@@ -273,22 +273,7 @@ As previously stated, we divided the unittests into two categories: one pertaini
 >
 > Answer:
 
-Yes, we have made use of config files in order to give room to experiment with model architectures, hyperparameters as well as which classes to include. We wanted to make this user friendly so that one could iterate over models quickly and easily without encountering errors. An example of where this is relevant can be seen in the `train_model.py` code where the following lines occur:
-
-def __init__(self, cfg, num_classes):
-        super(ImageClassifier, self).__init__()
-        self.cfg = cfg
-
-        if cfg.default_model == 'cnn':
-            self.model = CustomCNN(cfg, num_classes)
-        elif cfg.default_model == 'vit':
-            self.model = ViTModel(cfg, num_classes)
-        else:
-            raise ValueError("Unsupported model type specified in configuration")
-
-        self.criterion = torch.nn.CrossEntropyLoss()
-
-Here it can be seen that the function determines whether the default_model parameter in the config file is `cnn` or `vit` and afterwards will initialize the appropriate model for further use in the code.
+--- question 12 fill here ---
 
 ### Question 13
 
@@ -303,7 +288,7 @@ Here it can be seen that the function determines whether the default_model param
 >
 > Answer:
 
---- question 13 fill here ---
+We use the config files to ensure reproducibility with respect to the models themselves, as this is the where the overarching parameters and architecture is defined. To reproduce an expirement one can inspect the results from `weights and biases` where the config file is saved and from which you would be able to apply the same parameters in another experiment. Training is made deterministic with the help of pytorch lightning, in which we have activated this feature. Additionally we have made use of `seed_everything` from pytorch lightning, which enables a specific seed for all the applied libraries so that results can be reproduced. 
 
 ### Question 14
 
@@ -320,7 +305,19 @@ Here it can be seen that the function determines whether the default_model param
 >
 > Answer:
 
---- question 14 fill here ---
+We have in this project made use of the experiment tracking framework: Weights and Biases. A screenshot of our enviroment as of 19/01/24 is shown down under:
+![mlops_architecture](figures/wb1.PNG)
+
+Here it is clear that we have tracked several runs of multiple models for our dog breed classifier. Looking at the image we have tracked trainning and validation loss and accuracy. These are the most important parameters for us to trace as they show if our model is indeed training and if it has begun to overfit.
+
+Using W&B we had the ability to track our models live even though training was not local (either cloud or HPC). We also used it for ablition studies of our models as it is a super easy way to track correlation between change and consequences on our accuracy. As we had two different model architectures we wanted to test we made different names and config settings so we could track it in W&B. The result of the best custom CNN is shown in the figure down under where we see validation accuracies of approximately 55%
+
+![mlops_architecture](figures/wb2.PNG)
+
+The result of the best custom ViT is shown in the figure down under where we see validation accuracies of approximately 35%. Note however the small amount of epochs as our models have not converged yet.
+
+![mlops_architecture](figures/wb3.PNG)
+
 
 ### Question 15
 
@@ -335,7 +332,11 @@ Here it can be seen that the function determines whether the default_model param
 >
 > Answer:
 
---- question 15 fill here ---
+We used docker primarily to enable using the different scripts in the cloud. This could greatly simplify the process as we could create images for data loading, training and deployment where we could "simply" upload the docker image to the cloud. We could also use this function locally to ensure that the code would be able to run on any of our computers and thereby reduce potential bugfixing issues. During development we encountered memory issues whilst deploying our images locally so a command to run the trainer became:
+
+`docker run --shm-size=1g --name <experiment_name> -e WANDB_API_KEY=<insert_API_KEY> trainer:latest`
+
+Where `--sshm-size=1g` increased the share of memory given to the VM enabling the run. Additionally some issues were encountered concerning the API key however these were solved as well. 
 
 ### Question 16
 
@@ -425,7 +426,9 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 22 fill here ---
+We managed to deploy the model locally using a local API and prepared these for training, predicting and so on in the cloud. However, we encountered credential issues which we were unable to solve in time and prevented the docker images/containers from uploading and dowloading results from our gcp bucket. We also encountered numerous issues with making `hydra` work together with the API environment, as this differed in a complex manner in comparison to the local repository. 
+
+In conclusion, the model could be deployed locally both directly by running the code and by running docker images, but not with an API. 
 
 ### Question 23
 
