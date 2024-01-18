@@ -57,7 +57,7 @@ To change the trained model go to `model_config.yaml` and specify your desired a
 
 ## Docker
 
-To build the docker image use the following command:
+To build the docker image to train the model in `train_model.py` use the following command:
 
 `docker build -f dockerfiles/train_model.dockerfile . -t trainer:latest`
 
