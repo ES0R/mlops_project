@@ -7,7 +7,7 @@ This is the project repo for the DTU course Machine Learning Operations (02476) 
 The goal of this project is to develop an ML system focusing on classifying dogs using their images. The project will utilize Docker to ensure a consistent and isolated environment for development and deployment. We will use Nicki Skaftes Cookiecutter template for project structuring and organization for a good workflow. Specifying hyperparameters is also crucial for reproducibility so therefore we will also use configuration management with Hydra. Weights and Biases will also be integrated for comprehensive experiment tracking and logging and then Pytorch Lightning will be used to reduce boilerplate code. The dataset consists of 20.000 images of dogs with labels, which can be used for image classification. Since the data takes up a lot of space, we will use DVC to efficiently manage and version the data, as well as handling our storage requirements. The models used for this project will be a custom CNN model for a baseline and then a ViT as a more advanced model. The Transformers framework by Hugging Face will be used to integrate the ViT model.
 
 
-## Technologies
+## Technologies/Frameworks
 
 A list of frameworks the projects aims to include:
 
@@ -26,7 +26,15 @@ A list of frameworks the projects aims to include:
 
 ## Data
 
-Run `dvc remote add -f -d storage gs://mlops-data-dog/` then `dvc pull`. 
+In this project we are using the `Stanford Dogs Dataset` which contains 120 breeds in 20,580 images of dogs with labels and bounding boxes. The dataset was chosen due to it's simplicity and relatively large number of images. We have decided to use a subset of the dataset (10 breeds) to minimize trainingtimes, however, we have made sure that it is simple to train on the entire dateset using the `data_config.yaml` file where you can specify which breeds to run using the `classes` parameter.
+
+To download data locally run:
+
+`dvc remote add -f -d storage gs://mlops-data-dog/` 
+
+then:
+
+`dvc pull` 
 
 ### Data loader
 
@@ -34,15 +42,11 @@ Run `dvc remote add -f -d storage gs://mlops-data-dog/` then `dvc pull`.
 - **Complete Dataset**: Processes all images and annotations.
 - **Sparse Dataset**: Choose classes by name or index from `class_mapping.yaml`
 
+## Trainer
 
-## Usage
-```bash
-# Process the complete dataset
-python ./src/data/make_dataset.py --dataset complete
+`train_model` is a script from which you can train your models using the specific hyperparemeter and architecture chosen by the user. In the end you should see a file named: `<model>_<Timestamp>` which should help keep track of multiple trained models. 
 
-# Process a sparse dataset with specific classes
-python ./src/data/make_dataset.py --dataset sparse --classes 0 1 "Airedale"
-```
+To change the trained model go to `model_config.yaml` and specify your desired architecture. Afterwards change the `default_model` parameter in `model_config.yaml` to the name of the model you which to train.
 
 ## Project structure
 
