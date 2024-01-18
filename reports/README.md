@@ -129,7 +129,7 @@ s194127, s185382, s194149, s194291, s194139
 >
 > Answer:
 
-We used the transformers
+We used the transformers framework by Hugging Face to implement the ViT architecture in our project. This framework allowed us to use pre-trained models as well as providing the ability to fine-tune them. We used transformers in hope of achieving more state-of-the-art results.  
 
 ## Coding environment
 
@@ -174,7 +174,7 @@ We used conda and pip for managing our dependencies. The list of dependencies wa
 >
 > Answer:
 
-Yes, we employed a method where all code was was written into functions, with even the main code being a function. Another rule we employed is that all pathing is relative the root directory, which helped generalize the pathing for saving and loading files in the correct location. This, however, means that all code should be run from the root folder. 
+Yes, we employed a method where all code was written into functions, with even the main code being a function. Another rule we employed is that all pathing is relative the root directory, which helped generalize the pathing for saving and loading files in the correct location. This, however, means that all code should be run from the root folder. 
 
 ## Version control
 
@@ -238,7 +238,7 @@ Yes, we made use of branches and pull requests in our project. Individual assign
 >
 > Answer:
 
-Yes
+Yes, we did employ DVC for data management in our project and it significantly improved our workflow. In our case the data always remained the same, so version control of the data wasn't strictly necessary, however, we found it very useful for storage efficiency and helping save storage space. The combination of DVC with our ML code in Git also ensured great reproducibility. Anyone on the team could easily reproduce and get the data by pulling the data with DVC. 
 
 ### Question 11
 
@@ -254,7 +254,7 @@ Yes
 >
 > Answer:
 
-As previously stated, we divided the unittests into two categories: one pertaining to the data aspect of our code and the other concerning the model construction. Therefore we created two separate .yaml files within the `.github/workflows` directory, which we named "Run Test Dataloading" and "Run Test Model" to correspond to these respective categories. Additionally, we configured these .yaml files to automate the execution of these actions every Monday at 14:00, ensuring that both data retrieval using `dvc` and the associated unittests continue to function smoothly. This setup also serves as a failsafe against unintentional model and data modifications that could potentially break the system.
+As previously stated, we divided the unittests into two categories: one pertaining to the data aspect of our code and the other concerning the model construction. Therefore we created two separate .yaml files within the `.github/workflows` directory, which we named "Run Test Dataloading" and "Run Test Model" to correspond to these respective categories. Additionally, we configured these .yaml files to automate the execution of these actions every Monday at 14:00, ensuring that both data retrieval using DVC and the associated unittests continue to function smoothly. This setup also serves as a failsafe against unintentional model and data modifications that could potentially break the system.
 
 ## Running code and tracking experiments
 
@@ -497,7 +497,7 @@ Student s185382 has worked with the fastAPI for usage of the model, the buckets 
 
 Student s194149 has worked on dataloading, dvc data version control, integration of buckets and dvc, hydra for use with config files and the training script
 
-Student s194291 has worked with integration of Wieghts and biases, the chosen unittests for our pipeline and CI in github actions for our repository
+Student s194291 has worked with integration of Weights and Biases, the chosen unittests for our pipeline and CI in github actions for our repository
 
 Student s194139 has worked with dataloading, building models in the model.py script and testing them, constructing docker files for containerization and cloud training of the models in gcp
 
