@@ -392,7 +392,7 @@ The integration of the cloud to our project was the latest stage we reached at i
 >
 > Answer:
 
---- question 19 fill here ---
+![mlops_architecture](figures/gc1.PNG)
 
 ### Question 20
 
