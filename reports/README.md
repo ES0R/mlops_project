@@ -457,7 +457,10 @@ We did not manage to implement monitoring for our deployed models within this cu
 >
 > Answer:
 
---- question 24 fill here ---
+Two of our group members used all 50 credits in a single day due to forgetting to stop a particularly expensive instance. Besides this expensive venture, our group has used approximately 10 credits during development of our service. The main cost expenses came from:
+
+> Buckets
+> Compute Engine (training of early models)
 
 ## Overall discussion of project
 
