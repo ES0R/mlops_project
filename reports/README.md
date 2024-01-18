@@ -305,11 +305,19 @@ We use the config files to ensure reproducibility with respect to the models the
 >
 > Answer:
 
+We have in this project made use of the experiment tracking framework: Weights and Biases. A screenshot of our enviroment as of 19/01/24 is shown down under:
 ![mlops_architecture](figures/wb1.PNG)
+
+Here it is clear that we have tracked several runs of multiple models for our dog breed classifier. Looking at the image we have tracked trainning and validation loss and accuracy. These are the most important parameters for us to trace as they show if our model is indeed training and if it has begun to overfit.
+
+Using W&B we had the ability to track our models live even though training was not local (either cloud or HPC). We also used it for ablition studies of our models as it is a super easy way to track correlation between change and consequences on our accuracy. As we had two different model architectures we wanted to test we made different names and config settings so we could track it in W&B. The result of the best custom CNN is shown in the figure down under where we see validation accuracies of approximately 55%
 
 ![mlops_architecture](figures/wb2.PNG)
 
+The result of the best custom ViT is shown in the figure down under where we see validation accuracies of approximately 35%. Note however the small amount of epochs as our models have not converged yet.
+
 ![mlops_architecture](figures/wb3.PNG)
+
 
 ### Question 15
 
