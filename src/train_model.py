@@ -134,7 +134,7 @@ def train(cfg: DictConfig):
     trainer.fit(model, train_loader, val_loader)
 
     # Optionally, save your trained model
-    model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
+    model_path = os.path.join(hydra.utils.get_original_cwd(), f'models/{run_name}.pth')
     torch.save(model.state_dict(), model_path)
 
 if __name__ == "__main__":
