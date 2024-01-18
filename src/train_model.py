@@ -65,7 +65,7 @@ class ImageClassifier(pl.LightningModule):
         return optimizer
 
 def get_run_name(cfg):
-    model_name = cfg.models.cnn.name
+    model_name = cfg.default_model
     current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     return f"{model_name}_{current_time}"
 
@@ -100,7 +100,6 @@ def train(cfg: DictConfig):
 
 
     # Set up Wandb Logger
-    time = datetime.now().strftime("%Y%m%d_%H%M%S")
     wandb_config = omegaconf.OmegaConf.to_container(cfg, resolve=True)
     wandb_logger = WandbLogger(name="TR-"+run_name, project="MLOps-Project", config=wandb_config)
     # Load data
