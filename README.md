@@ -24,6 +24,8 @@ A list of frameworks the projects aims to include:
 | Pytorch-lightning   | Reduce boilerplate Code |
 | Pytorch   | Deep learning framework |
 
+All codes should be run from the root directory of the project, so make sure to path to the desired file from the `mlops_project` folder. 
+
 ## Data
 
 In this project we are using the `Stanford Dogs Dataset` which contains 120 breeds in 20,580 images of dogs with labels and bounding boxes. The dataset was chosen due to it's simplicity and relatively large number of images. We have decided to use a subset of the dataset (10 breeds) to minimize trainingtimes, however, we have made sure that it is simple to train on the entire dateset using the `data_config.yaml` file where you can specify which breeds to run using the `classes` parameter.
@@ -44,9 +46,13 @@ then:
 
 ## Trainer
 
-`train_model` is a script from which you can train your models using the specific hyperparemeter and architecture chosen by the user. In the end you should see a file named: `<model>_<Timestamp>` which should help keep track of multiple trained models. 
+`train_model.py` is a script from which you can train your models using the specific hyperparemeter and architecture chosen by the user. In the end you should see a file named according to the following template: `<model>_<Timestamp>` which should help keep track of multiple trained models. 
 
-To change the trained model go to `model_config.yaml` and specify your desired architecture. Afterwards change the `default_model` parameter in `model_config.yaml` to the name of the model you which to train.
+To change the trained model go to `model_config.yaml` and specify your desired architecture. Afterwards change the `default_model` parameter in `model_config.yaml` to the name of the model you wish to train.
+
+## Predicter
+
+`predict_model.py` is a script from which you can pass any image, and predict class of dog in the picture. You can choose a specific model by inserting the file name in `model_config.yaml` under the parameter `WhatEverThisParameterIsNamed!!`. 
 
 ## Project structure
 
