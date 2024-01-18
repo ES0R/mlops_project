@@ -1,4 +1,4 @@
-name: Run Test Dataloading
+name: Run Test Model
 
 on:
   push:
@@ -25,13 +25,7 @@ jobs:
       - name: Install Dependencies w/ requirements.txt
         run: |
           pip install -r requirements.txt
-          # If you have other dependencies, install them here
-    
-      - name: DVC to get raw data
-        run: |
-         dvc remote add -f -d storage gs://mlops-data-dog/
-         dvc pull
-         python ./src/data/make_dataset.py --dataset sparse --classes 0    
+          # If you have other dependencies, install them here   
 
       - name: Run Pytest
-        run: pytest tests/test_dataloading.py
+        run: pytest tests/test_model.py
