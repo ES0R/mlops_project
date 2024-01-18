@@ -129,7 +129,7 @@ s194127, s185382, s194149, s194291, s194139
 >
 > Answer:
 
-We used the transformers framework by Hugging Face to implement the ViT architecture in our project. This framework allowed us to use pre-trained models as well as providing the ability to fine-tune them. We used transformers in hope of achieving more state-of-the-art results.  
+We used the timm framework by Hugging Face to implement the ViT architecture in our project. This framework allowed us to use pre-trained models as well as provide the ability to fine-tune them. This was used to establish a state-of-the-art model for comparison with the custom model that we developed. Using timm made it easy to import pre-trained models which minimizes time spent on creating your own deep learning from scratch which allows time to be spent otherwise.
 
 ## Coding environment
 
@@ -163,7 +163,9 @@ We used conda and pip for managing our dependencies. The list of dependencies wa
 > *experiments.*
 > Answer:
 
---- question 5 fill here ---
+From the cookiecutter template we have filled out data, dockerfiles, models, reports, src and tests. We removed docs and notebooks as the `README.md` contains a majority of relevant documentation for the code and notebooks was not utilized in the project. We have added an app, checkpoints*, output* and wandb* directories in the root. The app contains the code necessary to run the application for inference while they * marked directories are created when running training. Checkpoints directory contains the model with the highest validation accuracy for a run, output contains log files for a run and wandb is generated through the usage of weights and biases. 
+
+In the project folder (src), there is an added config folder that contains the config files for hydra. Furthermore, the visualization directory is removed as weights and biases are used for visualization. 
 
 ### Question 6
 
@@ -278,7 +280,10 @@ Here is a link showing a triggered workflow executed successfully: <https://gith
 >
 > Answer:
 
---- question 12 fill here ---
+We used hydra with config files to configure experiments. Everything from data to hyperparameters and models are done using the config files stored in `src/config`. The primary reason for this is that the config file is passed to weights and biases. This makes it very easy to see how each training run was configured. 
+
+To run the training you would configure the hyperparameters for the run and the structure of the deep learning model. The `model_config.yaml` is made such that it affects the convolutional and fully connected layers in the model.py e.g. you control everything from the config files (layers and everything). After it has been configured, you just run the python script from root: `python src/train_model.py`.
+
 
 ### Question 13
 
