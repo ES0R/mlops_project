@@ -1,10 +1,10 @@
-default_model: cnn
+default_model: vit
 
 hyperparameters:
   lr: 0.001
-  wd: 0.00001
-  batch_size: 32
-  epochs: 3
+  wd: 0.0001
+  batch_size: 64
+  epochs: 20
   optim: adamw
 models:
   cnn:
@@ -39,9 +39,9 @@ models:
     fc_layers:
       - in_features: N/A  
         out_features: 512
-        dropout: 0.4
+        dropout: 0.3
       - in_features: 512
-        out_features: 256
-        dropout: 0.4
+        out_features: 1024
+        dropout: 0.3
 
     

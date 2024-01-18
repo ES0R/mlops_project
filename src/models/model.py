@@ -7,35 +7,29 @@ class ViTModel(nn.Module):
     def __init__(self, cfg, num_classes):
         super(ViTModel, self).__init__()
         
-       # Load a pretrained Vision Transformer model
-        self.vit_model = timm.create_model("vit_base_patch16_224", pretrained=True)
+        # Load a pretrained Vision Transformer model
+        self.vit_model = timm.create_model("vit_small_patch16_224", pretrained=True)
 
-        # Adjust the output size of the ViT model to match the input size of the first FC layer
         in_features = self.vit_model.head.in_features
-        self.vit_model.head = nn.Linear(in_features, 768)  # Assuming the first FC layer expects 768 features
 
-        # fc layers on top of vit
-        self.fc_layers = nn.ModuleList()
-        for fc_layer in cfg.models.vit.fc_layers:
-            self.fc_layers.append(
-                nn.Sequential(
-                    nn.Linear(in_features, fc_layer.out_features),
-                    nn.ReLU(),
-                    nn.BatchNorm1d(fc_layer.out_features),
-                    nn.Dropout(p=fc_layer.dropout)
-                )
-            )
-            in_features = fc_layer.out_features
+        self.vit_model.head = nn.Linear(in_features, 768)
 
-        self.output = nn.Linear(in_features, num_classes)
+        # Define an additional FC layer with activation, batch norm, and dropout
+        self.fc_layer = nn.Sequential(
+            nn.ReLU(),
+            nn.BatchNorm1d(768),
+            nn.Dropout(0.5)
+        )
+
+        # Define the output layer
+        self.output = nn.Linear(768, num_classes)
 
     def forward(self, x):
         # Forward pass through the ViT model
         x = self.vit_model(x)
 
-        # Pass through additional fully connected layers
-        for fc_layer in self.fc_layers:
-            x = fc_layer(x)
+        # Pass through the additional FC layer
+        x = self.fc_layer(x)
 
         # Final output layer
         x = self.output(x)

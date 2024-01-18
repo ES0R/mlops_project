@@ -146,10 +146,9 @@ def train(cfg: DictConfig):
     torch.save(model.state_dict(), model_path)
 
     # After training, save the model to GCS
-    model_local_path = os.path.join(hydra.utils.get_original_cwd(), f'models/trained_model_{cfg.model.models.cnn.name}.pth')
-    model_gcs_path = f'models/trained_model_{cfg.model.models.cnn.name}.pth'
+    model_gcs_path = f'models/{run_name}.pth'
     
-    upload_to_gcs(model_local_path, model_gcs_path)
+    upload_to_gcs(model_path, model_gcs_path)
 
 if __name__ == "__main__":
     train()
