@@ -208,7 +208,7 @@ In total we have implemented 6 tests. 3 tests were related to the data part of o
 >
 > Answer:
 
-As stated in the answer for 'Question 7' we only did testing for the data part of our code as well as the model construction. And we only did 6 unittests overall. We did generate a coverage report and it states that only 16% of the code is covered with the testing of the data part our code. And 40% of the code is covered with the testing related to the model construction.  
+As stated in the answer for 'Question 7' we only did testing for the data part of our code as well as the model construction. And we only did 6 unittests overall. We did generate a coverage report and it states that only 14% of the code is covered with the testing of the data part our code. And 33% of the code is covered with the testing related to the model construction.  
 
 ### Question 9
 
