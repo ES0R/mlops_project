@@ -100,9 +100,9 @@ def train(cfg: DictConfig):
 
 
     # Set up Wandb Logger
+    time = datetime.now().strftime("%Y%m%d_%H%M%S")
     wandb_config = omegaconf.OmegaConf.to_container(cfg, resolve=True)
-    wandb_logger = WandbLogger(name="Training_Run", project="MLOps-Project", config=wandb_config)
-
+    wandb_logger = WandbLogger(name="TR-"+run_name, project="MLOps-Project", config=wandb_config)
     # Load data
     train_loader, val_loader = load_data(cfg)
 
